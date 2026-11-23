@@ -52,6 +52,8 @@ export class ArtifactShapeUtil extends BaseBoxShapeUtil<ArtifactShape> {
 
 	override onDoubleClick(shape: ArtifactShape) {
 		emit(CC_EVENTS.openArtifact, { boardId: ccMeta(shape).boardId, shapeId: shape.id })
+		// returning a (no-op) change tells tldraw the double-click was handled, so it won't start a text shape
+		return { id: shape.id, type: shape.type }
 	}
 
 	override component(shape: ArtifactShape) {

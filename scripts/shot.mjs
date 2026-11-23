@@ -13,6 +13,15 @@ for (const s of steps) {
 	if (s.startsWith('text:')) { await page.getByRole('button', { name: s.slice(5), exact: true }).first().click(); continue }
 	if (s.startsWith('css:')) { await page.locator(s.slice(4)).first().click(); continue }
 	if (s.startsWith('shot:')) { await page.screenshot({ path: s.slice(5) }); continue }
+	if (s.startsWith('dbl:')) {
+		const pt = await page.evaluate((id) => {
+			const e = window.__editor
+			const b = e.getShapePageBounds('shape:' + id)
+			return e.pageToScreen({ x: b.x + b.w * 0.7, y: b.y + b.h * 0.6 })
+		}, s.slice(4))
+		await page.mouse.dblclick(pt.x, pt.y)
+		continue
+	}
 	if (s.startsWith('key:')) { await page.keyboard.press(s.slice(4)); continue }
 }
 await page.screenshot({ path: out })

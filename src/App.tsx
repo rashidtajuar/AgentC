@@ -10,6 +10,8 @@ import { DemoProvider } from './state/DemoContext'
 import { delay } from './state/delay'
 import { createDemoStore, type DemoStore } from './state/demoStore'
 import { AiPanel } from './ui/AiPanel'
+import { ArtifactPopover } from './ui/ArtifactPopover'
+import { ProposalSheet } from './ui/ProposalSheet'
 import { PresenceLayer } from './ui/PresenceLayer'
 import { SourcesRail } from './ui/SourcesRail'
 import { Toasts } from './ui/Toasts'
@@ -20,7 +22,13 @@ const assetUrls = getAssetUrlsByImport()
 /** Style controls only while something is selected, so the board stays clear. */
 function SelectionStylePanel(props: TLUiStylePanelProps) {
 	const editor = useEditor()
-	const hasSelection = useValue('has selection', () => editor.getSelectedShapeIds().length > 0, [editor])
+	const hasStyleable = useValue(
+		'styleable selection',
+		() => editor.getSelectedShapes().some((s) => !s.type.startsWith('cc-')),
+		[editor]
+	)
+	const isDrawing = useValue('drawing tool', () => editor.getCurrentToolId() !== 'select' && editor.getCurrentToolId() !== 'hand', [editor])
+	const hasSelection = hasStyleable || isDrawing
 	return hasSelection ? <DefaultStylePanel {...props} /> : null
 }
 
@@ -58,9 +66,14 @@ export default function App() {
 			const id = (e as CustomEvent<{ boardId?: string }>).detail?.boardId
 			if (id) demo.store.getState().openArtifact(id)
 		}
+		const onKey = (e: KeyboardEvent) => {
+			if (e.key === 'Escape') demo.store.getState().clearHighlight()
+		}
+		window.addEventListener('keydown', onKey)
 		window.addEventListener(CC_EVENTS.approve, onApprove)
 		window.addEventListener(CC_EVENTS.openArtifact, onOpen)
 		return () => {
+			window.removeEventListener('keydown', onKey)
 			window.removeEventListener(CC_EVENTS.approve, onApprove)
 			window.removeEventListener(CC_EVENTS.openArtifact, onOpen)
 		}
@@ -80,6 +93,8 @@ export default function App() {
 					onMount={onMount}
 				/>
 				<PresenceLayer />
+				<ArtifactPopover />
+				<ProposalSheet />
 				<Toasts />
 			</main>
 			<AiPanel />

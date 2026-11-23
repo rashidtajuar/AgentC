@@ -27,11 +27,11 @@ export const LAYOUT = {
 	frameY: 0,
 	slot: (index: number) => ({ x: 24 + (index % 2) * 248, y: 140 + Math.floor(index / 2) * 246 }),
 	rowB: 724,
-	rowC: 964,
-	files: { 'art-logo': 0, 'art-webui': 400, 'art-theme': 800, 'art-brief': 1200 } as Record<string, number>,
-	notes: { 'note-maya': 1160, 'note-jon': 1400 } as Record<string, number>,
+	rowC: 1050,
+	files: { 'art-logo': 0, 'art-webui': 500, 'art-theme': 1000, 'art-brief': 1500 } as Record<string, number>,
+	notes: { 'note-maya': 1200, 'note-jon': 1440 } as Record<string, number>,
 	decision: { x: 0, y: 724 },
-	pr: { x: 600, y: 724 },
+	pr: { x: 780, y: 724 },
 }
 
 interface ReferenceSeed {
