@@ -182,7 +182,7 @@ export function createTldrawPort(editor: Editor): CanvasPort {
 		if (!boxes.length) return
 		const bounds = Box.Common(boxes)
 		const vp = editor.getViewportScreenBounds()
-		const inset = 72
+		const inset = 88
 		const zoom = Math.min(1, (vp.w - inset * 2) / bounds.w, (vp.h - inset * 2) / bounds.h)
 		editor.zoomToBounds(bounds, {
 			inset,
@@ -223,8 +223,8 @@ export function createTldrawPort(editor: Editor): CanvasPort {
 			const ghosts = editor.getCurrentPageShapes().filter((s) => meta(s).ghost || meta(s).ghostDot)
 			editor.updateShapes(
 				ghosts.map((s) => {
-					const { ghost: _g, ghostDot: _gd, ...rest } = meta(s)
-					const partial: Record<string, unknown> = { id: s.id, type: s.type, meta: rest, opacity: 1 }
+					// tldraw merges meta on update, so flags are cleared explicitly
+					const partial: Record<string, unknown> = { id: s.id, type: s.type, meta: { ...meta(s), ghost: false, ghostDot: false }, opacity: 1 }
 					if (s.type === 'arrow') partial.props = { color: 'black', labelColor: 'black', dash: 'solid' }
 					return partial as TLShapePartial
 				})

@@ -8,7 +8,7 @@ import { ARTIFACT_IDS, LAYOUT, SIZES, seedBoard } from './seed'
 
 export const DECISION_ID = 'decision-warm'
 export const PR_ID = 'pr-42'
-const GAP_NOTE = { warm: 'note-gap-warm', playful: 'note-gap-playful' }
+const GAP_NOTE = { editorial: 'note-gap-editorial', playful: 'note-gap-playful' }
 
 const has = (b: Board, id: string) => b.shapes.some((s) => s.id === id)
 const hasFrames = (b: Board) => b.shapes.some((s) => s.type === 'direction')
@@ -21,7 +21,7 @@ export function chipsFor(board: Board, beat: BeatId): string[] {
 	if (prOpen(board)) return [BEATS[5].chip!]
 	if (isApproved(board)) return [BEATS[3].chip!]
 	if (votesIn(board)) return [APPROVE_CHIP]
-	const gapsDone = has(board, GAP_NOTE.warm) || has(board, GAP_NOTE.playful)
+	const gapsDone = has(board, GAP_NOTE.editorial) || has(board, GAP_NOTE.playful)
 	return beat <= 1 && !gapsDone ? [BEATS[1].chip!, VOTE_CHIP] : [VOTE_CHIP]
 }
 
@@ -78,8 +78,8 @@ function childCount(board: Board, dir: string) {
 
 function gapOps(board: Board): CanvasOp[] {
 	const ops: CanvasOp[] = []
-	if (has(board, 'dir-warm'))
-		ops.push({ op: 'createNote', id: GAP_NOTE.warm, text: COPY.gaps.notes.warm, author: 'ai', parentId: 'dir-warm', ...LAYOUT.slot(childCount(board, 'dir-warm')) })
+	if (has(board, 'dir-editorial'))
+		ops.push({ op: 'createNote', id: GAP_NOTE.editorial, text: COPY.gaps.notes.editorial, author: 'ai', parentId: 'dir-editorial', ...LAYOUT.slot(childCount(board, 'dir-editorial')) })
 	if (has(board, 'dir-playful'))
 		ops.push({ op: 'createNote', id: GAP_NOTE.playful, text: COPY.gaps.notes.playful, author: 'ai', parentId: 'dir-playful', ...LAYOUT.slot(childCount(board, 'dir-playful')) })
 	return ops
@@ -159,7 +159,7 @@ export class ScriptedPlanner implements Planner {
 		if (hasFrames(board) && !isApproved(board) && !votesIn(board) && hasAny(prompt, BEATS[2].keywords)) {
 			return { intent: 'vote', thinking: [], message: COPY.voteAsk, chips: [] }
 		}
-		if (hasFrames(board) && !isApproved(board) && !has(board, GAP_NOTE.warm) && hasAny(prompt, BEATS[1].keywords)) {
+		if (hasFrames(board) && !isApproved(board) && !has(board, GAP_NOTE.editorial) && !has(board, GAP_NOTE.playful) && hasAny(prompt, BEATS[1].keywords)) {
 			return this.gaps(board)
 		}
 		if (isApproved(board) && !prOpen(board) && hasAny(prompt, BEATS[3].keywords)) return this.apply(board)

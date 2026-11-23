@@ -99,11 +99,11 @@ export const COPY = {
 	gaps: {
 		thinking: ['Checking each direction against Halden_Brief.pdf'],
 		message:
-			'Two gaps against the brief: Warm & tactile has no packaging reference, and Playful modern has no real product shot. I added a note to each.',
+			'Two gaps against Halden_Brief.pdf: Editorial has no colour direction yet, and Playful modern has no real product shot. Warm & tactile covers everything the brief asks for. I added a note to each gap.',
 		summary: 'Add 2 gap notes',
 		notes: {
-			warm: 'Gap: no packaging reference yet. Add a bag or label example?',
-			playful: 'Gap: no real product shot — everything here is flat colour.',
+			editorial: 'Gap: no colour yet. Everything here is black and white.',
+			playful: 'Gap: no real product shot. Everything here is flat colour.',
 		},
 	},
 	voteAsk: 'I asked Maya and Jon to vote on the three directions.',

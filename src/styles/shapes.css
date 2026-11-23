@@ -276,7 +276,7 @@
 .cc-dir[data-lit='lit'] { box-shadow: inset 0 0 0 2px var(--cc-ink); }
 .cc-dir__head { padding: 18px 22px 0; display: flex; flex-direction: column; gap: 6px; }
 .cc-dir__title-row { display: flex; align-items: center; gap: 10px; min-height: 26px; }
-.cc-dir__name { margin: 0; font-size: 20px; font-weight: 650; letter-spacing: -0.022em; }
+.cc-dir__name { margin: 0; font-size: 24px; font-weight: 650; letter-spacing: -0.024em; }
 .cc-dir__approved {
 	display: inline-flex;
 	align-items: center;
@@ -287,10 +287,10 @@
 }
 .cc-dir__why {
 	margin: 0;
-	font-size: var(--cc-text-m);
+	font-size: 15px;
 	line-height: 1.45;
 	color: var(--cc-ink-muted);
-	max-width: 46ch;
+	max-width: 44ch;
 }
 .cc-dir__foot { display: flex; align-items: center; gap: 10px; min-height: 30px; }
 .cc-dir__votes { display: flex; align-items: center; gap: 10px; }
@@ -332,10 +332,11 @@
 .cc-pr__repo { margin-top: auto; font-family: var(--cc-font-mono); font-size: 10px; color: var(--cc-ink-faint); }
 
 /* ---------- tldraw theming: the board ---------- */
-.cc-canvas .tl-container {
-	--color-background: var(--cc-board);
-	--tl-font-sans: var(--cc-font-ui);
-	--tl-font-mono: var(--cc-font-mono);
+.cc-canvas .tl-container.tl-theme__light,
+.cc-canvas .tl-theme__light {
+	--tl-color-background: var(--cc-board);
+	--tl-color-selection-stroke: #1f2329;
+	--tl-color-selection-fill: rgba(31, 35, 41, 0.06);
 }
 
 @media (prefers-reduced-motion: reduce) {

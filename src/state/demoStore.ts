@@ -115,7 +115,12 @@ export function createDemoStore({ planner, port, delay }: DemoDeps): DemoStore {
 
 		function offer(p: ActionProposal) {
 			set({ pending: p, chips: [], run: undefined })
-			if (!p.external) port.preview(p.ops, p.id)
+			if (p.external) return
+			port.preview(p.ops, p.id)
+			const ids = p.ops.flatMap((o) =>
+				o.op === 'createFrame' ? [o.id] : o.op === 'moveShapes' ? o.moves.filter((m) => !m.parentId).map((m) => m.id) : o.op === 'connect' ? [o.from, o.to] : o.op === 'createNote' ? [o.parentId ?? o.id] : []
+			)
+			if (ids.length) setTimeout(() => port.focus(ids), 80)
 		}
 
 		function pushCommitted(c: Committed) {
@@ -194,6 +199,7 @@ export function createDemoStore({ planner, port, delay }: DemoDeps): DemoStore {
 
 		async function runVote() {
 			const sig = signal()
+			port.focus(['dir-warm', 'dir-editorial', 'dir-playful'])
 			await speak({ thinking: [], message: COPY.voteAsk })
 			for (const voter of [PEOPLE.maya.name, PEOPLE.jon.name]) {
 				set((s) => ({ presence: { ...s.presence, [voter]: 'dir-warm' } }))
@@ -263,6 +269,7 @@ export function createDemoStore({ planner, port, delay }: DemoDeps): DemoStore {
 				if (!p || get().busy) return
 				if (p.external) return set({ sheetOpen: true })
 				port.commit()
+				if (p.id === PROPOSAL_IDS.organize) port.focus(['dir-warm', 'dir-editorial', 'dir-playful', 'art-logo', 'art-theme'])
 				const sentinel = sentinelOf(p)
 				if (sentinel) pushCommitted({ beatBefore: get().beat, sentinel, proposal: p })
 				set({ pending: undefined, beat: p.beat })

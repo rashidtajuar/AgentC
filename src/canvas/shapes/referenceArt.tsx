@@ -1,4 +1,5 @@
 // Authored moodboard references (palettes, type specimens, textures) and photo credits.
+import { useState } from 'react'
 import { PHOTOS } from '../../demo/content'
 
 const PALETTES: Record<string, { name: string; colors: [string, string][] }> = {
@@ -26,13 +27,7 @@ const PALETTES: Record<string, { name: string; colors: [string, string][] }> = {
 
 export function ReferenceArt({ kind, asset, title }: { kind: string; asset: string; title: string }) {
 	if (kind === 'photo') {
-		const photo = PHOTOS[asset]
-		if (!photo) return <div className="cc-ref__art cc-ref__art--missing">Image unavailable</div>
-		return (
-			<div className="cc-ref__art cc-ref__art--photo">
-				<img src={photo.url} alt={photo.alt} draggable={false} loading="eager" />
-			</div>
-		)
+		return <Photo asset={asset} />
 	}
 	if (kind === 'swatch') {
 		const p = PALETTES[asset]
@@ -67,6 +62,22 @@ export function ReferenceArt({ kind, asset, title }: { kind: string; asset: stri
 					<circle key={i} cx={cx} cy={cy} r={r} fill={c} />
 				))}
 			</svg>
+		</div>
+	)
+}
+
+function Photo({ asset }: { asset: string }) {
+	const photo = PHOTOS[asset]
+	const [failed, setFailed] = useState(false)
+	if (!photo || failed)
+		return (
+			<div className="cc-ref__art cc-ref__art--missing" role="img" aria-label={photo?.alt ?? 'Image unavailable'}>
+				<span>{photo ? 'Photo offline' : 'Image unavailable'}</span>
+			</div>
+		)
+	return (
+		<div className="cc-ref__art cc-ref__art--photo">
+			<img src={photo.url} alt={photo.alt} draggable={false} onError={() => setFailed(true)} />
 		</div>
 	)
 }
