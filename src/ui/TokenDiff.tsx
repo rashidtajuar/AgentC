@@ -22,7 +22,9 @@ function Value({ name, value }: { name: string; value: string }) {
 		)
 	return (
 		<span className="cc-token__val">
-			<span className="cc-token__radius" style={{ borderTopLeftRadius: `${Math.min(Number(value), 14)}px` }} />
+			<svg className="cc-token__radius" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+				<path d={`M2 15 V${2 + Math.min(Number(value), 12)} Q2 2 ${2 + Math.min(Number(value), 12)} 2 H15`} fill="none" stroke="currentColor" strokeWidth="2" />
+			</svg>
 			<code>{value}px</code>
 		</span>
 	)

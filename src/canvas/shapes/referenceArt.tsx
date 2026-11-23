@@ -48,9 +48,9 @@ export function ReferenceArt({ kind, asset, title }: { kind: string; asset: stri
 		const serif = asset === 'serif'
 		return (
 			<div className={`cc-ref__art cc-ref__art--specimen cc-specimen--${asset}`}>
-				<span className="cc-specimen__glyphs">{serif ? 'Aa' : 'Aa'}</span>
+				<span className="cc-specimen__glyphs">Aa</span>
 				<span className="cc-specimen__word">{serif ? 'Single origin' : 'Fizzy cold brew!'}</span>
-				<span className="cc-specimen__name">{serif ? 'Instrument Serif' : 'Bricolage Grotesque 800'}</span>
+				<span className="cc-specimen__name">{serif ? 'Gloock' : 'Bricolage Grotesque 800'}</span>
 			</div>
 		)
 	}

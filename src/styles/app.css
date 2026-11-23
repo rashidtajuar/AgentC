@@ -85,6 +85,8 @@ body {
 	font-size: var(--cc-text-xs);
 	font-weight: 500;
 	letter-spacing: 0.01em;
+	white-space: nowrap;
+	flex: none;
 }
 
 /* ---------- Buttons ---------- */
@@ -528,7 +530,7 @@ body {
 .cc-token__val code { font-family: var(--cc-font-mono); font-size: 11px; color: var(--cc-shell-text); }
 .cc-token__chip { width: 18px; height: 18px; border-radius: 5px; flex: none; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14); }
 .cc-token__font { width: 22px; font-size: 15px; color: var(--cc-shell-text); }
-.cc-token__radius { width: 16px; height: 16px; border-top: 2px solid var(--cc-shell-muted); border-left: 2px solid var(--cc-shell-muted); flex: none; }
+.cc-token__radius { flex: none; color: var(--cc-shell-muted); }
 .cc-token__arrow { color: var(--cc-shell-faint); }
 
 /* diff */
