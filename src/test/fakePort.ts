@@ -1,38 +1,84 @@
 import { applyOps, emptyBoard } from '../core/board'
 import type { Board, CanvasOp } from '../core/types'
-import type { CanvasPort } from '../canvas/port'
+import type { CanvasPort, StepId } from '../canvas/port'
 
-/** In-memory CanvasPort that records calls; good enough to drive the demo engine in tests. */
+/**
+ * In-memory CanvasPort that mirrors the tldraw adapter's contract: every preview and every apply is
+ * one undo step, a new preview discards the previous one, and change notifications arrive a tick later.
+ */
 export class FakePort implements CanvasPort {
 	board: Board = emptyBoard()
-	previewing: { ops: CanvasOp[]; base: Board; id: string } | null = null
+	previewing: { ops: CanvasOp[]; id: string; step: StepId } | null = null
 	calls: string[] = []
 	highlighted: string[] | null = null
 	focused: string[] = []
+	private history: { step: StepId; before: Board }[] = []
+	private seq = 0
 	private listeners = new Set<() => void>()
+
+	private notify() {
+		setTimeout(() => this.listeners.forEach((l) => l()), 0)
+	}
+	private push(kind: string) {
+		const step = `[${kind}]_${++this.seq}`
+		this.history.push({ step, before: this.board })
+		return step
+	}
 
 	load(board: Board) {
 		this.calls.push('load')
 		this.board = structuredClone(board)
 		this.previewing = null
+		this.history = []
 	}
 	preview(ops: CanvasOp[], proposalId: string) {
+		if (this.previewing) this.discard()
 		this.calls.push(`preview:${proposalId}`)
-		this.previewing = { ops, base: this.board, id: proposalId }
+		const step = this.push(`proposal:${proposalId}`)
+		this.previewing = { ops, id: proposalId, step }
 		this.board = applyOps(this.board, ops)
+		this.notify()
 	}
 	commit() {
+		if (!this.previewing) return null
 		this.calls.push('commit')
+		const step = this.previewing.step
 		this.previewing = null
+		return step
 	}
 	discard() {
 		this.calls.push('discard')
-		if (this.previewing) this.board = this.previewing.base
+		const p = this.previewing
 		this.previewing = null
+		if (!p) return
+		const i = this.history.findIndex((h) => h.step === p.step)
+		if (i < 0) return
+		this.board = this.history[i].before
+		this.history = this.history.slice(0, i)
+		this.notify()
 	}
 	apply(ops: CanvasOp[]) {
+		if (this.previewing) this.discard()
 		this.calls.push('apply')
+		const step = this.push('apply')
 		this.board = applyOps(this.board, ops)
+		this.notify()
+		return step
+	}
+	isStepActive(step: StepId) {
+		return this.history.some((h) => h.step === step)
+	}
+	previewWasUndone() {
+		if (!this.previewing || this.isStepActive(this.previewing.step)) return false
+		this.previewing = null
+		return true
+	}
+	undo() {
+		const last = this.history.pop()
+		if (!last) return
+		this.calls.push('undo')
+		this.board = last.before
+		this.notify()
 	}
 	read() {
 		return this.board
@@ -53,10 +99,14 @@ export class FakePort implements CanvasPort {
 	screenRect() {
 		return { x: 0, y: 0, w: 100, h: 100 }
 	}
-	/** Simulate Cmd+Z removing shapes and relationships. */
-	simulateUndo(board: Board) {
-		this.board = structuredClone(board)
-		this.listeners.forEach((l) => l())
+	/** A person deleting shapes by hand: not an undo. */
+	deleteShapes(ids: string[]) {
+		this.board = {
+			...this.board,
+			shapes: this.board.shapes.filter((s) => !ids.includes(s.id)),
+			relationships: this.board.relationships.filter((r) => !ids.includes(r.id)),
+		}
+		this.notify()
 	}
 }
 
@@ -85,4 +135,4 @@ export function manualDelay() {
 	return { delay, releaseAll, pending: () => waiting.length }
 }
 
-export const settle = () => new Promise((r) => setTimeout(r, 0))
+export const settle = (ms = 5) => new Promise((r) => setTimeout(r, ms))

@@ -16,6 +16,23 @@
 .cc-dot--s { width: 9px; height: 9px; }
 .cc-dot--m { width: 13px; height: 13px; }
 .cc-dot--l { width: 18px; height: 18px; }
+.cc-dot--xl { width: 40px; height: 40px; box-shadow: 0 1px 0 rgba(255, 255, 255, 0.35) inset, 0 2px 4px rgba(16, 18, 22, 0.28); }
+
+/* teammate vote: graphite sticker with an initial */
+.cc-vote-sticker {
+	display: grid;
+	place-items: center;
+	flex: none;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background: radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.22) 0 14%, transparent 44%), var(--cc-graphite-800);
+	color: #fff;
+	font-family: var(--cc-font-ui);
+	font-size: 17px;
+	font-weight: 650;
+	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 2px 4px rgba(16, 18, 22, 0.3);
+}
 .cc-dot[data-state='proposal'] { --dot: var(--cc-dot-cobalt); }
 .cc-dot[data-state='synced'] { --dot: var(--cc-dot-green); }
 .cc-dot[data-state='changed'] { --dot: var(--cc-dot-amber); }
@@ -50,16 +67,20 @@
 
 .cc-print[data-ghost='true'],
 .cc-dir[data-ghost='true'] {
-	opacity: 0.72;
-	outline: 1.5px dashed var(--cc-dot-cobalt);
-	outline-offset: 3px;
-	box-shadow: 0 0 0 0 transparent, 0 6px 18px -8px rgba(43, 87, 232, 0.35);
+	outline: 2.5px dashed var(--cc-dot-cobalt);
+	outline-offset: 4px;
+	box-shadow: none;
 }
+.cc-print[data-ghost='true'] > :not(.cc-print__ghost-dot) { opacity: 0.5; }
+.cc-dir[data-ghost='true'] > .cc-dir__head { opacity: 0.55; }
+.cc-dir[data-ghost='true'] { background: rgba(43, 87, 232, 0.05); }
+.cc-print[data-ghost='true'] { background: rgba(255, 255, 255, 0.6); overflow: visible; }
 .cc-print__ghost-dot {
 	position: absolute;
-	top: -6px;
-	right: -6px;
+	top: -16px;
+	right: -14px;
 	display: flex;
+	z-index: 2;
 }
 
 [data-lit='dim'] { opacity: 0.22; filter: saturate(0.4); }
@@ -148,7 +169,7 @@
 	gap: 1px;
 	padding: 8px 10px 9px;
 }
-.cc-ref__title { font-size: var(--cc-text-m); font-weight: 560; letter-spacing: -0.005em; }
+.cc-ref__title { font-size: 15px; font-weight: 580; letter-spacing: -0.01em; }
 .cc-ref__meta { font-size: var(--cc-text-xs); color: var(--cc-ink-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cc-ref__meta a { color: inherit; text-decoration: underline; text-underline-offset: 2px; text-decoration-color: var(--cc-hairline-strong); }
 .cc-ref__meta a:hover { color: var(--cc-ink); }
@@ -275,16 +296,25 @@
 }
 .cc-dir[data-lit='lit'] { box-shadow: inset 0 0 0 2px var(--cc-ink); }
 .cc-dir__head { padding: 18px 22px 0; display: flex; flex-direction: column; gap: 6px; }
+/* the name row leaves room for the stickers stuck in the corner */
+.cc-dir__title-row { padding-right: 150px; }
 .cc-dir__title-row { display: flex; align-items: center; gap: 10px; min-height: 26px; }
 .cc-dir__name { margin: 0; font-size: 24px; font-weight: 650; letter-spacing: -0.024em; }
 .cc-dir__approved {
-	display: inline-flex;
-	align-items: center;
-	gap: 6px;
-	font-size: var(--cc-text-s);
+	font-size: var(--cc-text-m);
 	font-weight: 600;
 	color: #b3301c;
 }
+.cc-dir__stickers {
+	position: absolute;
+	top: 14px;
+	right: 16px;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	z-index: 1;
+}
+.cc-dir[data-ghost='true'] .cc-dir__stickers { top: -16px; right: -14px; }
 .cc-dir__why {
 	margin: 0;
 	font-size: 15px;
@@ -293,9 +323,7 @@
 	max-width: 44ch;
 }
 .cc-dir__foot { display: flex; align-items: center; gap: 10px; min-height: 30px; }
-.cc-dir__votes { display: flex; align-items: center; gap: 10px; }
-.cc-dir__novotes { font-size: var(--cc-text-s); color: var(--cc-ink-faint); }
-.cc-vote { display: inline-flex; align-items: center; gap: 5px; font-size: var(--cc-text-s); color: var(--cc-ink-muted); }
+.cc-dir__votes { font-size: var(--cc-text-s); color: var(--cc-ink-faint); }
 .cc-dir__approve { margin-left: auto; pointer-events: all; }
 
 /* ---------- Decision ---------- */
@@ -335,6 +363,10 @@
 .cc-canvas .tl-container.tl-theme__light,
 .cc-canvas .tl-theme__light {
 	--tl-color-background: var(--cc-board);
+	/* tldraw's accent is a saturated blue that would read as the cobalt "suggestion" state */
+	--tl-color-selected: var(--cc-graphite-900);
+	--tl-color-selected-contrast: #ffffff;
+	--tl-color-primary: var(--cc-graphite-900);
 	--tl-color-selection-stroke: #1f2329;
 	--tl-color-selection-fill: rgba(31, 35, 41, 0.06);
 }
@@ -342,3 +374,6 @@
 @media (prefers-reduced-motion: reduce) {
 	.cc-dot--stick { animation: none; }
 }
+
+/* keep the drawing chrome out of the way while the review sheet is open */
+.cc-canvas[data-sheet='open'] .tlui-layout__bottom { visibility: hidden; }

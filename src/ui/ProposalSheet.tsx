@@ -23,6 +23,12 @@ export function ProposalSheet() {
 	const headingRef = useRef<HTMLHeadingElement>(null)
 
 	useEffect(() => {
+		const canvas = document.querySelector('.cc-canvas')
+		if (open) canvas?.setAttribute('data-sheet', 'open')
+		else canvas?.removeAttribute('data-sheet')
+	}, [open])
+
+	useEffect(() => {
 		if (!open) return
 		headingRef.current?.focus()
 		const onKey = (e: KeyboardEvent) => e.key === 'Escape' && ctx?.store.getState().closeSheet()

@@ -27,7 +27,7 @@ export function Print({ shape, className = '', children, label }: PrintProps) {
 			{children}
 			{meta.ghost ? (
 				<span className="cc-print__ghost-dot">
-					<Dot state="proposal" size="m" />
+					<Dot state="proposal" size="xl" />
 				</span>
 			) : null}
 		</HTMLContainer>

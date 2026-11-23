@@ -13,7 +13,7 @@ export function dotLabel(state: DotState) {
 
 interface DotProps {
 	state: DotState
-	size?: 's' | 'm' | 'l'
+	size?: 's' | 'm' | 'l' | 'xl'
 	animate?: boolean
 	label?: string
 	/** person who stuck the dot, for vote dots */
@@ -30,5 +30,14 @@ export function Dot({ state, size = 'm', animate = false, label, title }: DotPro
 			data-state={state}
 			className={`cc-dot cc-dot--${size}${animate ? ' cc-dot--stick' : ''}`}
 		/>
+	)
+}
+
+/** A teammate's vote: a neutral graphite sticker with their initial. Votes are not a state, so no state colour. */
+export function VoteSticker({ name, animate = true }: { name: string; animate?: boolean }) {
+	return (
+		<span role="img" aria-label={`${name} voted`} title={`${name} voted`} className={`cc-vote-sticker${animate ? ' cc-dot--stick' : ''}`}>
+			{name.slice(0, 1)}
+		</span>
 	)
 }

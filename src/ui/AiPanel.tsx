@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
-import { Check, CornerDownRight, LoaderCircle } from 'lucide-react'
+import { Check, CornerDownRight, LoaderCircle, Undo2 } from 'lucide-react'
 import type { ActionProposal } from '../core/types'
 import type { ChatMessage } from '../state/demoStore'
 import { useDemo, useDemoCtx } from '../state/DemoContext'
 import { Composer } from './Composer'
 import { Dot } from './Dot'
+import { CLEAR_HIGHLIGHT_CHIP } from '../demo/scenario'
 
 export function AiPanel() {
 	const ctx = useDemoCtx()
@@ -39,6 +40,7 @@ export function AiPanel() {
 	const sendChip = (chip: string) => {
 		if (!ctx) return
 		const s = ctx.store.getState()
+		if (chip === CLEAR_HIGHLIGHT_CHIP) return s.clearHighlight()
 		if (chip === 'Ask the team to vote') return void s.askVote()
 		if (chip.startsWith('Approve ')) return void s.approveDirection('dir-warm')
 		void s.send(chip)
@@ -51,14 +53,20 @@ export function AiPanel() {
 				<span className="cc-ai__scope">Sees this board · asks before changing anything</span>
 			</div>
 			<div className="cc-ai__list" ref={listRef} aria-live="polite">
-				{messages.map((m) => (
-					<Message
-						key={m.id}
-						m={m}
-						proposal={pending && pending.id === m.proposalId ? pending : undefined}
-						accepted={!!m.proposalId && committed.some((c) => c.proposal?.id === m.proposalId)}
-					/>
-				))}
+				{messages.map((m, i) => {
+					// a proposal's card sits on the latest message that offered it (re-offers repeat the id)
+					const latestForProposal = !!m.proposalId && !messages.slice(i + 1).some((n) => n.proposalId === m.proposalId)
+					const lastCommitted = committed.at(-1)
+					return (
+						<Message
+							key={m.id}
+							m={m}
+							proposal={latestForProposal && pending?.id === m.proposalId ? pending : undefined}
+							accepted={latestForProposal && committed.some((c) => c.proposal?.id === m.proposalId)}
+							canUndo={latestForProposal && lastCommitted?.proposal?.id === m.proposalId && !pending}
+						/>
+					)
+				})}
 			</div>
 			<div className="cc-ai__foot">
 				{chips.length > 0 && !busy ? (
@@ -77,7 +85,8 @@ export function AiPanel() {
 	)
 }
 
-function Message({ m, proposal, accepted }: { m: ChatMessage; proposal?: ActionProposal; accepted: boolean }) {
+function Message({ m, proposal, accepted, canUndo }: { m: ChatMessage; proposal?: ActionProposal; accepted: boolean; canUndo: boolean }) {
+	const ctx = useDemoCtx()
 	if (m.role === 'user')
 		return (
 			<div className="cc-msg cc-msg--user">
@@ -110,7 +119,13 @@ function Message({ m, proposal, accepted }: { m: ChatMessage; proposal?: ActionP
 			{!proposal && accepted ? (
 				<p className="cc-msg__status">
 					<Check size={13} strokeWidth={2.5} aria-hidden="true" />
-					Accepted · undo with ⌘Z / Ctrl+Z
+					Accepted
+					{canUndo ? (
+						<button type="button" className="cc-link-btn" onClick={() => ctx?.store.getState().undoLast()}>
+							<Undo2 size={13} aria-hidden="true" />
+							Undo
+						</button>
+					) : null}
 				</p>
 			) : null}
 		</div>

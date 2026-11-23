@@ -3,7 +3,7 @@ import { applyOps } from '../core/board'
 import type { PlanContext, Planner, PlanResult } from '../core/planner'
 import type { ActionProposal, BeatId, Board, BoardShape, CanvasOp } from '../core/types'
 import { COPY, DIRECTIONS, PEOPLE, PROJECT, THEME_PATCH, TOKEN_CHANGES, type DirectionId } from './content'
-import { APPROVE_CHIP, APPROVE_KEYWORDS, BEATS, hasAny, normalize, VOTE_CHIP } from './scenario'
+import { APPROVE_CHIP, BEATS, hasAny, isApproval, isNegated, normalize, VOTE_CHIP } from './scenario'
 import { ARTIFACT_IDS, LAYOUT, SIZES, seedBoard } from './seed'
 
 export const DECISION_ID = 'decision-warm'
@@ -149,28 +149,28 @@ export class ScriptedPlanner implements Planner {
 		const { board, beat } = ctx
 		const help = (): PlanResult => ({ intent: 'help', thinking: [], message: COPY.help, chips: chipsFor(board, beat) })
 		if (!normalize(prompt)) return help()
+		const gapsDone = has(board, GAP_NOTE.editorial) || has(board, GAP_NOTE.playful)
 
-		if (hasFrames(board) && !isApproved(board) && hasAny(prompt, APPROVE_KEYWORDS)) {
-			const target = directionNamed(prompt) ?? 'dir-warm'
-			if (target !== 'dir-warm') return this.notInDemo(board, beat)
-			return this.approve(target, ctx)
-		}
-		if (!hasFrames(board) && hasAny(prompt, BEATS[0].keywords)) return this.organize(board)
-		if (hasFrames(board) && !isApproved(board) && !votesIn(board) && hasAny(prompt, BEATS[2].keywords)) {
+		// the step-specific intents come first; approval only on a plain, affirmative "approve"
+		if (!hasFrames(board) && hasAny(prompt, BEATS[0].keywords) && !isNegated(prompt)) return this.organize(board)
+		if (hasFrames(board) && !isApproved(board) && !gapsDone && hasAny(prompt, BEATS[1].keywords)) return this.gaps(board)
+		if (hasFrames(board) && !isApproved(board) && !votesIn(board) && hasAny(prompt, BEATS[2].keywords) && !isNegated(prompt)) {
 			return { intent: 'vote', thinking: [], message: COPY.voteAsk, chips: [] }
 		}
-		if (hasFrames(board) && !isApproved(board) && !has(board, GAP_NOTE.editorial) && !has(board, GAP_NOTE.playful) && hasAny(prompt, BEATS[1].keywords)) {
-			return this.gaps(board)
-		}
-		if (isApproved(board) && !prOpen(board) && hasAny(prompt, BEATS[3].keywords)) return this.apply(board)
+		if (isApproved(board) && !prOpen(board) && hasAny(prompt, BEATS[3].keywords) && !isNegated(prompt)) return this.apply(board)
 		if (prOpen(board) && hasAny(prompt, BEATS[5].keywords)) return this.connections(board)
+		if (hasFrames(board) && isApproval(prompt)) {
+			const target = directionNamed(prompt)
+			if (target && target !== 'dir-warm') return this.notInDemo(board, beat)
+			if (!isApproved(board)) return this.approve('dir-warm', ctx)
+		}
 		return help()
 	}
 
 	/** Called for a direct Approve click on a direction frame as well as typed approvals. */
 	approve(directionId: string, ctx: PlanContext): PlanResult {
 		const { board, beat } = ctx
-		if (directionId !== 'dir-warm') return this.notInDemo(board, beat)
+		if (directionId !== 'dir-warm' || isApproved(board)) return this.notInDemo(board, beat)
 		const commitOps = approveCommitOps(board)
 		const after = applyOps(board, commitOps)
 		const proposal: ActionProposal = {
@@ -191,7 +191,7 @@ export class ScriptedPlanner implements Planner {
 	private organize(board: Board): PlanResult {
 		return {
 			intent: 'propose',
-			thinking: COPY.organize.thinking,
+			thinking: COPY.organize.thinking(board.shapes.filter((s) => s.type === 'reference').length),
 			message: COPY.organize.message,
 			chips: [],
 			proposal: {
@@ -240,7 +240,7 @@ export class ScriptedPlanner implements Planner {
 		return {
 			intent: 'show-connections',
 			thinking: [],
-			message: COPY.connections,
+			message: COPY.connections(warmRefs.length),
 			highlightIds: ids.filter((id) => has(board, id)),
 			chips: chipsFor(board, 6),
 		}

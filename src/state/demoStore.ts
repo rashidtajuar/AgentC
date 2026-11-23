@@ -1,9 +1,9 @@
 import { createStore, type StoreApi } from 'zustand/vanilla'
 import type { Planner, PlanResult } from '../core/planner'
-import type { ActionProposal, BeatId, CanvasOp, ExecutionRun } from '../core/types'
-import type { CanvasPort } from '../canvas/port'
+import type { ActionProposal, BeatId, ExecutionRun } from '../core/types'
+import type { CanvasPort, StepId } from '../canvas/port'
 import { COPY, EXECUTION_STEPS, PEOPLE } from '../demo/content'
-import { BEATS } from '../demo/scenario'
+import { BEATS, CLEAR_HIGHLIGHT_CHIP } from '../demo/scenario'
 import { boardAtBeat, chipsFor, DECISION_ID, PR_ID, PROPOSAL_IDS } from '../demo/scriptedPlanner'
 import { seedBoard } from '../demo/seed'
 import { isAbort } from './delay'
@@ -25,10 +25,10 @@ export interface Toast {
 	text: string
 }
 
-interface Committed {
+/** One accepted or applied step, and the canvas undo step it lives in. */
+export interface Committed {
 	beatBefore: BeatId
-	/** board id whose disappearance means this step was undone */
-	sentinel: string
+	step: StepId
 	proposal?: ActionProposal
 }
 
@@ -50,6 +50,7 @@ export interface DemoState {
 	send(prompt: string): Promise<void>
 	accept(): void
 	discardPending(): void
+	undoLast(): void
 	openSheet(): void
 	closeSheet(): void
 	approveDirection(directionId: string): Promise<void>
@@ -73,14 +74,21 @@ export interface DemoDeps {
 
 export type DemoStore = StoreApi<DemoState>
 
-const PACE = { thinkingStep: 560, beforeText: 320, voteTravel: 950, voteSettle: 650, execStep: 720, sheetClose: 1300 }
+const PACE = { thinkingStep: 560, beforeText: 320, voteTravel: 950, voteSettle: 650, execStep: 720, sheetClose: 1300, landed: 680 }
 
-const sentinelOf = (p: ActionProposal): string | undefined => {
-	for (const op of p.ops) {
-		if (op.op === 'createFrame' || op.op === 'createNote' || op.op === 'connect') return op.id
-		if (op.op === 'createShape') return op.shape.id
-	}
-	return undefined
+/** Board ids a proposal touches, for framing the camera. */
+function idsToFrame(p: ActionProposal): string[] {
+	return p.ops.flatMap((o) =>
+		o.op === 'createFrame'
+			? [o.id]
+			: o.op === 'moveShapes'
+				? o.moves.filter((m) => !m.parentId).map((m) => m.id)
+				: o.op === 'connect'
+					? [o.from, o.to]
+					: o.op === 'createNote'
+						? [o.parentId ?? o.id]
+						: []
+	)
 }
 
 export function createDemoStore({ planner, port, delay }: DemoDeps): DemoStore {
@@ -91,7 +99,7 @@ export function createDemoStore({ planner, port, delay }: DemoDeps): DemoStore {
 
 	const store = createStore<DemoState>()((set, get) => {
 		const signal = () => ctrl.signal
-		const chips = (beat = get().beat) => chipsFor(port.read(), beat)
+		const chips = (beat = get().beat) => (get().pending ? [] : chipsFor(port.read(), beat))
 		const addMessage = (m: Omit<ChatMessage, 'id'>) => {
 			const msg = { ...m, id: nextId('m') }
 			set((s) => ({ messages: [...s.messages, msg] }))
@@ -99,6 +107,18 @@ export function createDemoStore({ planner, port, delay }: DemoDeps): DemoStore {
 		}
 		const patchMessage = (id: string, patch: Partial<ChatMessage>) =>
 			set((s) => ({ messages: s.messages.map((m) => (m.id === id ? { ...m, ...patch } : m)) }))
+
+		/** Stop anything in flight (thinking, votes, an execution run). */
+		function abortInFlight() {
+			ctrl.abort()
+			ctrl = new AbortController()
+			set({ busy: false, presence: {} })
+		}
+
+		/** Fire-and-forget wait tied to the current run, so Restart/Jump/undo cancel it. */
+		function later(ms: number, fn: () => void) {
+			delay(ms, signal()).then(fn, () => {})
+		}
 
 		/** Reveal thinking steps then the message text, at a natural pace. */
 		async function speak(result: Pick<PlanResult, 'thinking' | 'message'>, extra: Partial<ChatMessage> = {}) {
@@ -117,14 +137,17 @@ export function createDemoStore({ planner, port, delay }: DemoDeps): DemoStore {
 			set({ pending: p, chips: [], run: undefined })
 			if (p.external) return
 			port.preview(p.ops, p.id)
-			const ids = p.ops.flatMap((o) =>
-				o.op === 'createFrame' ? [o.id] : o.op === 'moveShapes' ? o.moves.filter((m) => !m.parentId).map((m) => m.id) : o.op === 'connect' ? [o.from, o.to] : o.op === 'createNote' ? [o.parentId ?? o.id] : []
-			)
-			if (ids.length) setTimeout(() => port.focus(ids), 80)
+			const ids = idsToFrame(p)
+			// frame once the cards have landed (the move tween runs ~620ms)
+			if (ids.length) later(PACE.landed, () => port.focus(ids))
 		}
 
-		function pushCommitted(c: Committed) {
-			set((s) => ({ committed: [...s.committed, c] }))
+		/** Drop a waiting canvas preview without the busy guard (internal use). */
+		function dropPending() {
+			const p = get().pending
+			if (!p) return
+			if (!p.external) port.discard()
+			set({ pending: undefined, sheetOpen: false })
 		}
 
 		async function guarded(fn: () => Promise<void>) {
@@ -141,36 +164,34 @@ export function createDemoStore({ planner, port, delay }: DemoDeps): DemoStore {
 		}
 
 		function reset(beat: BeatId) {
-			ctrl.abort()
-			ctrl = new AbortController()
+			abortInFlight()
 			port.highlight(null)
-			set({
-				beat,
-				busy: false,
-				pending: undefined,
-				sheetOpen: false,
-				run: undefined,
-				toasts: [],
-				presence: {},
-				popover: null,
-				committed: [],
-			})
+			set({ beat, pending: undefined, sheetOpen: false, run: undefined, toasts: [], popover: null, committed: [] })
 		}
 
+		/** React to the canvas changing under us: only real undos rewind the story. */
 		function onBoardChange() {
+			if (port.previewWasUndone()) {
+				abortInFlight()
+				set({ pending: undefined })
+				set({ chips: chips() })
+			}
 			const { committed } = get()
-			const top = committed.at(-1)
-			if (!top || port.exists(top.sentinel)) return
-			// a person undid the last accepted step
-			set((s) => ({ committed: s.committed.slice(0, -1), beat: top.beatBefore, pending: undefined }))
-			setTimeout(() => {
-				if (top.proposal) {
-					offer(top.proposal)
-					addMessage({ role: 'ai', text: 'Undone. The suggestion is back if you want it.', proposalId: top.proposal.id })
+			let keep = committed.length
+			while (keep > 0 && !port.isStepActive(committed[keep - 1].step)) keep--
+			if (keep === committed.length) return
+			const first = committed[keep]
+			abortInFlight()
+			dropPending()
+			set({ committed: committed.slice(0, keep), beat: first.beatBefore, run: undefined })
+			later(0, () => {
+				if (first.proposal) {
+					addMessage({ role: 'ai', text: 'Undone. The suggestion is back if you want it.', proposalId: first.proposal.id })
+					offer(first.proposal)
 				} else {
 					set({ chips: chips() })
 				}
-			}, 0)
+			})
 		}
 
 		async function handle(result: PlanResult) {
@@ -189,17 +210,18 @@ export function createDemoStore({ planner, port, delay }: DemoDeps): DemoStore {
 					port.highlight(result.highlightIds ?? null)
 					if (result.highlightIds?.length) port.focus(result.highlightIds)
 					await speak(result)
-					set({ beat: 6, chips: [] })
+					set({ beat: 6, chips: [CLEAR_HIGHLIGHT_CHIP] })
 					return
 				default:
 					await speak(result)
-					set({ chips: result.chips })
+					set({ chips: get().pending ? [] : result.chips })
 			}
 		}
 
 		async function runVote() {
 			const sig = signal()
-			port.focus(['dir-warm', 'dir-editorial', 'dir-playful'])
+			// votes land on Warm & tactile: frame it close enough to see the stickers go on
+			port.focus(['dir-warm'])
 			await speak({ thinking: [], message: COPY.voteAsk })
 			for (const voter of [PEOPLE.maya.name, PEOPLE.jon.name]) {
 				set((s) => ({ presence: { ...s.presence, [voter]: 'dir-warm' } }))
@@ -218,22 +240,26 @@ export function createDemoStore({ planner, port, delay }: DemoDeps): DemoStore {
 		}
 
 		async function runApproval(result: PlanResult) {
-			if (get().pending) discardPending()
+			// a waiting suggestion is set aside first, so the approval is never folded into its undo step
+			dropPending()
 			const beatBefore = get().beat
-			port.apply(result.commitOps ?? [])
-			pushCommitted({ beatBefore, sentinel: DECISION_ID })
+			const step = port.apply(result.commitOps ?? [])
+			set((s) => ({ committed: [...s.committed, { beatBefore, step }] }))
 			port.focus(['dir-warm', DECISION_ID])
 			await speak(result, { proposalId: result.proposal?.id })
 			if (result.proposal) offer(result.proposal)
 		}
 
-		function discardPending() {
-			const p = get().pending
-			if (!p || get().busy) return
-			if (!p.external) port.discard()
-			set({ pending: undefined, sheetOpen: false })
-			addMessage({ role: 'ai', text: 'Discarded. Nothing changed.' })
+		async function sayNotInDemo() {
+			await speak({ thinking: [], message: COPY.notInDemo })
 			set({ chips: chips() })
+		}
+
+		function greet() {
+			const b = port.read()
+			const refs = b.shapes.filter((s) => s.type === 'reference').length
+			const files = b.shapes.filter((s) => s.type === 'artifact').length
+			return COPY.greeting(refs, files)
 		}
 
 		return {
@@ -268,15 +294,24 @@ export function createDemoStore({ planner, port, delay }: DemoDeps): DemoStore {
 				const p = get().pending
 				if (!p || get().busy) return
 				if (p.external) return set({ sheetOpen: true })
-				port.commit()
-				if (p.id === PROPOSAL_IDS.organize) port.focus(['dir-warm', 'dir-editorial', 'dir-playful', 'art-logo', 'art-theme'])
-				const sentinel = sentinelOf(p)
-				if (sentinel) pushCommitted({ beatBefore: get().beat, sentinel, proposal: p })
+				const step = port.commit()
+				if (step) set((s) => ({ committed: [...s.committed, { beatBefore: s.beat, step, proposal: p }] }))
 				set({ pending: undefined, beat: p.beat })
+				if (p.id === PROPOSAL_IDS.organize) port.focus(['dir-warm', 'dir-editorial', 'dir-playful'])
 				set({ chips: chips(p.beat) })
 			},
 
-			discardPending,
+			discardPending() {
+				if (!get().pending || get().busy) return
+				dropPending()
+				addMessage({ role: 'ai', text: 'Discarded. Nothing changed.' })
+				set({ chips: chips() })
+			},
+
+			undoLast() {
+				if (get().busy) return
+				port.undo()
+			},
 
 			openSheet() {
 				if (get().pending?.external) set({ sheetOpen: true })
@@ -288,14 +323,15 @@ export function createDemoStore({ planner, port, delay }: DemoDeps): DemoStore {
 
 			async approveDirection(directionId) {
 				if (get().busy) return
-				if (get().pending && !get().pending?.external && get().pending?.id !== PROPOSAL_IDS.gaps) return
+				if (directionId !== 'dir-warm') return guarded(sayNotInDemo)
+				const p = get().pending
+				// Warm's follow-up is already on screen
+				if (p && (p.external || p.id === PROPOSAL_IDS.links)) return
+				if (port.read().dots['dir-warm'] === 'approved') return
+				if (!planner.approve) return
 				await guarded(async () => {
-					const result = planner.plan(`approve ${directionId.replace('dir-', '')}`, {
-						beat: get().beat,
-						board: port.read(),
-						selection: [],
-					})
-					if (result.intent === 'approve' || result.intent === 'not-in-demo') return handle(result)
+					const result = planner.approve!('dir-warm', { beat: get().beat, board: port.read(), selection: [] })
+					await handle(result)
 				})
 			},
 
@@ -320,9 +356,8 @@ export function createDemoStore({ planner, port, delay }: DemoDeps): DemoStore {
 						await delay(PACE.execStep, sig)
 						set((s) => ({ run: s.run && { ...s.run, steps: s.run.steps.map((st, j) => (j === i ? { ...st, state: 'done' } : st)) } }))
 					}
-					port.apply(p.ops)
-					pushCommitted({ beatBefore, sentinel: PR_ID, proposal: p })
-					set({ pending: undefined, beat: 5 })
+					const step = port.apply(p.ops)
+					set((s) => ({ committed: [...s.committed, { beatBefore, step, proposal: p }], pending: undefined, beat: 5 }))
 					get().toast('Nothing was merged or deployed.')
 					await delay(PACE.sheetClose, sig)
 					set({ sheetOpen: false })
@@ -336,7 +371,7 @@ export function createDemoStore({ planner, port, delay }: DemoDeps): DemoStore {
 				reset(0)
 				port.load(seedBoard())
 				seq = 0
-				set({ messages: [{ id: nextId('m'), role: 'ai', text: COPY.greeting }] })
+				set({ messages: [{ id: nextId('m'), role: 'ai', text: greet() }] })
 				set({ chips: chips(0) })
 			},
 
@@ -376,10 +411,9 @@ export function createDemoStore({ planner, port, delay }: DemoDeps): DemoStore {
 			},
 			clearHighlight() {
 				port.highlight(null)
+				if (get().chips.includes(CLEAR_HIGHLIGHT_CHIP)) set({ chips: chips() })
 			},
 		}
 	})
 	return store
 }
-
-export type { CanvasOp }

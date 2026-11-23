@@ -1,6 +1,6 @@
 import { BaseFrameLikeShapeUtil, HTMLContainer, T } from 'tldraw'
 import { Check } from 'lucide-react'
-import { Dot } from '../../ui/Dot'
+import { Dot, VoteSticker } from '../../ui/Dot'
 import { CC_EVENTS, emit, litState, useCanvasUi } from '../canvasUi'
 import { ccMeta, SHAPE, type DirectionShape } from './types'
 
@@ -41,30 +41,22 @@ function DirectionView({ shape }: { shape: DirectionShape }) {
 			style={{ width: shape.props.w, height: shape.props.h }}
 			aria-label={`Direction: ${shape.props.name}`}
 		>
+			<div className="cc-dir__stickers" aria-hidden={votes.length === 0 && !approved && !meta.ghost}>
+				{meta.ghost ? <Dot state="proposal" size="xl" /> : null}
+				{votes.map((v) => (
+					<VoteSticker key={v} name={v} />
+				))}
+				{approved ? <Dot state="approved" size="xl" animate label="Approved" /> : null}
+			</div>
 			<header className="cc-dir__head">
 				<div className="cc-dir__title-row">
 					<h3 className="cc-dir__name">{shape.props.name}</h3>
-					{approved ? (
-						<span className="cc-dir__approved">
-							<Dot state="approved" size="l" animate />
-							Approved
-						</span>
-					) : null}
-					{meta.ghost ? <Dot state="proposal" size="m" /> : null}
+					{approved ? <span className="cc-dir__approved">Approved</span> : null}
 				</div>
 				<p className="cc-dir__why">{shape.props.rationale}</p>
 				<div className="cc-dir__foot">
-					<span className="cc-dir__votes" aria-label={`${votes.length} votes`}>
-						{votes.length === 0 ? (
-							<span className="cc-dir__novotes">No votes yet</span>
-						) : (
-							votes.map((v) => (
-								<span key={v} className="cc-vote">
-									<Dot state="approved" size="m" animate title={`${v} voted`} label={`${v} voted`} />
-									<span className="cc-vote__who">{v}</span>
-								</span>
-							))
-						)}
+					<span className="cc-dir__votes">
+						{votes.length === 0 ? 'No votes yet' : `${votes.length} ${votes.length === 1 ? 'vote' : 'votes'} · ${votes.join(', ')}`}
 					</span>
 					{!approved && !meta.ghost ? (
 						<button

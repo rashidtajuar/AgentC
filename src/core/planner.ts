@@ -24,4 +24,6 @@ export interface PlanResult {
 /** Anything that turns a prompt plus board context into a plan: scripted today, a live model later. */
 export interface Planner {
 	plan(prompt: string, ctx: PlanContext): PlanResult
+	/** A person approved a direction directly (a button, not a prompt): record it and suggest follow-ups. */
+	approve?(directionId: string, ctx: PlanContext): PlanResult
 }

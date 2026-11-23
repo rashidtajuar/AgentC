@@ -152,7 +152,7 @@ body {
 	margin-left: -6px;
 	border-radius: 50%;
 	background: var(--cc-graphite-800);
-	box-shadow: 0 0 0 2px var(--cc-graphite-950), inset 0 0 0 1.5px var(--hue);
+	box-shadow: 0 0 0 2px var(--cc-graphite-950), inset 0 0 0 1px var(--cc-shell-line);
 	font-size: var(--cc-text-xs);
 	font-weight: 600;
 	color: var(--cc-shell-text);
@@ -258,6 +258,7 @@ body {
 .cc-src-item:hover { background: var(--cc-graphite-800); }
 .cc-src-item__name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cc-src-item__ext { font-family: var(--cc-font-mono); font-size: 10px; color: var(--cc-shell-faint); }
+.cc-src-item__ext--kind { font-family: var(--cc-font-ui); font-size: var(--cc-text-xs); }
 .cc-src-item__nodot { width: 9px; }
 .cc-tools { padding: 10px 8px 14px; border-top: 1px solid var(--cc-shell-line); }
 .cc-tools__list { list-style: none; margin: 0; padding: 0 8px; display: flex; flex-direction: column; gap: 6px; }
@@ -301,6 +302,20 @@ body {
 	background: var(--cc-shell-muted);
 }
 .cc-msg__status { display: inline-flex; align-items: center; gap: 6px; font-size: var(--cc-text-s); color: var(--cc-shell-faint); }
+.cc-link-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	margin-left: 6px;
+	padding: 2px 6px;
+	border: 0;
+	border-radius: 6px;
+	background: transparent;
+	color: var(--cc-shell-muted);
+	font: inherit;
+	cursor: pointer;
+}
+.cc-link-btn:hover { background: var(--cc-graphite-800); color: var(--cc-shell-text); }
 .cc-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .cc-steps li { display: flex; align-items: center; gap: 8px; font-size: var(--cc-text-s); color: var(--cc-shell-muted); animation: cc-rise var(--cc-dur) var(--cc-ease-out) both; }
 .cc-steps li[data-done] { color: var(--cc-shell-faint); }
@@ -406,7 +421,7 @@ body {
 	margin-top: 14px;
 	padding: 2px 7px;
 	border-radius: 6px;
-	background: var(--hue);
+	background: var(--cc-graphite-900);
 	color: #fff;
 	font-size: var(--cc-text-xs);
 	font-weight: 600;

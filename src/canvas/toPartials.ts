@@ -63,6 +63,7 @@ export function boardShapeToPartial(s: BoardShape, { ghost, dot, votes }: Partia
 		case 'note':
 			return {
 				...base,
+				meta: { ...base.meta, author: String(p.author ?? '') },
 				opacity: ghost ? 0.6 : 1,
 				props: {
 					richText: toRichText(String(p.text ?? '')),

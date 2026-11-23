@@ -32,7 +32,7 @@ export class DecisionShapeUtil extends BaseBoxShapeUtil<DecisionShape> {
 		return (
 			<Print shape={shape} className="cc-decision" label={`Decision: ${title} approved`}>
 				<div className="cc-decision__head">
-					<Dot state="approved" size="l" animate />
+					<Dot state="approved" size="xl" animate />
 					<h3 className="cc-decision__title">Decision: {title}</h3>
 				</div>
 				<p className="cc-decision__why">{rationale}</p>

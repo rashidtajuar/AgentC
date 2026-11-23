@@ -49,16 +49,16 @@ interface ReferenceSeed {
 const deg = (d: number) => (d * Math.PI) / 180
 
 export const REFERENCES: ReferenceSeed[] = [
-	{ id: 'ref-cup', direction: 'dir-warm', kind: 'photo', title: 'Hand-thrown cup', asset: 'cup', x: 20, y: 30, rotation: deg(-2) },
-	{ id: 'ref-glaze', direction: 'dir-warm', kind: 'photo', title: 'Kiln-red glaze', asset: 'glaze', x: 560, y: 306, rotation: deg(1.5) },
-	{ id: 'ref-beans', direction: 'dir-warm', kind: 'photo', title: 'Dark roast', asset: 'beans', x: 1062, y: 40, rotation: deg(-1) },
-	{ id: 'ref-kiln', direction: 'dir-warm', kind: 'swatch', title: 'Kiln palette', asset: 'kiln', x: 300, y: 336, rotation: deg(2.5) },
-	{ id: 'ref-book', direction: 'dir-editorial', kind: 'photo', title: 'Grid book spread', asset: 'book', x: 280, y: 8, rotation: deg(1) },
-	{ id: 'ref-mag', direction: 'dir-editorial', kind: 'photo', title: 'Quiet layout', asset: 'magazine', x: 822, y: 334, rotation: deg(-2.5) },
-	{ id: 'ref-serif', direction: 'dir-editorial', kind: 'specimen', title: 'Sharp serif', asset: 'serif', x: 36, y: 318, rotation: deg(-1.5) },
-	{ id: 'ref-fizz', direction: 'dir-playful', kind: 'swatch', title: 'Fizz palette', asset: 'fizz', x: 800, y: 16, rotation: deg(2) },
-	{ id: 'ref-round', direction: 'dir-playful', kind: 'specimen', title: 'Chunky rounded', asset: 'rounded', x: 540, y: 44, rotation: deg(-1) },
-	{ id: 'ref-pattern', direction: 'dir-playful', kind: 'texture', title: 'Bubble pattern', asset: 'bubbles', x: 1082, y: 300, rotation: deg(1.5) },
+	{ id: 'ref-cup', direction: 'dir-warm', kind: 'photo', title: 'Hand-thrown cup', asset: 'cup', x: 20, y: 24, rotation: deg(-2) },
+	{ id: 'ref-glaze', direction: 'dir-warm', kind: 'photo', title: 'Kiln-red glaze', asset: 'glaze', x: 522, y: 292, rotation: deg(1.5) },
+	{ id: 'ref-beans', direction: 'dir-warm', kind: 'photo', title: 'Dark roast', asset: 'beans', x: 776, y: 14, rotation: deg(-1) },
+	{ id: 'ref-kiln', direction: 'dir-warm', kind: 'swatch', title: 'Kiln palette', asset: 'kiln', x: 282, y: 318, rotation: deg(2.5) },
+	{ id: 'ref-book', direction: 'dir-editorial', kind: 'photo', title: 'Grid book spread', asset: 'book', x: 272, y: 8, rotation: deg(1) },
+	{ id: 'ref-mag', direction: 'dir-editorial', kind: 'photo', title: 'Quiet layout', asset: 'magazine', x: 276, y: 586, rotation: deg(-2.5) },
+	{ id: 'ref-serif', direction: 'dir-editorial', kind: 'specimen', title: 'Sharp serif', asset: 'serif', x: 28, y: 300, rotation: deg(-1.5) },
+	{ id: 'ref-fizz', direction: 'dir-playful', kind: 'swatch', title: 'Fizz palette', asset: 'fizz', x: 770, y: 308, rotation: deg(2) },
+	{ id: 'ref-round', direction: 'dir-playful', kind: 'specimen', title: 'Chunky rounded', asset: 'rounded', x: 524, y: 34, rotation: deg(-1) },
+	{ id: 'ref-pattern', direction: 'dir-playful', kind: 'texture', title: 'Bubble pattern', asset: 'bubbles', x: 526, y: 598, rotation: deg(1.5) },
 ]
 
 export const ARTIFACTS: (Artifact & { x: number; y: number; rotation: number; preview: string })[] = [
@@ -72,8 +72,8 @@ export const ARTIFACTS: (Artifact & { x: number; y: number; rotation: number; pr
 		capabilities: ['open', 'preview', 'read'],
 		summary: 'Client brief · 6 pages',
 		preview: 'doc',
-		x: 250,
-		y: 640,
+		x: 20,
+		y: 880,
 		rotation: deg(-1),
 	},
 	{
@@ -86,8 +86,8 @@ export const ARTIFACTS: (Artifact & { x: number; y: number; rotation: number; pr
 		capabilities: ['open', 'preview'],
 		summary: '12 artboards · edited by Maya',
 		preview: 'logo',
-		x: 572,
-		y: 618,
+		x: 320,
+		y: 862,
 		rotation: deg(1.5),
 	},
 	{
@@ -100,8 +100,8 @@ export const ARTIFACTS: (Artifact & { x: number; y: number; rotation: number; pr
 		capabilities: ['open', 'preview', 'read'],
 		summary: '8 frames · 24 variables',
 		preview: 'ui',
-		x: 892,
-		y: 642,
+		x: 620,
+		y: 884,
 		rotation: deg(-2),
 	},
 	{
@@ -114,15 +114,15 @@ export const ARTIFACTS: (Artifact & { x: number; y: number; rotation: number; pr
 		capabilities: ['open', 'preview', 'read', 'propose-edit'],
 		summary: 'main · updated 3 days ago',
 		preview: 'code',
-		x: 1210,
-		y: 616,
+		x: 920,
+		y: 866,
 		rotation: deg(1),
 	},
 ]
 
 const NOTES = [
-	{ id: NOTE_IDS.maya, author: 'Maya', text: 'Client kept pointing at the handmade cups in the kickoff.', x: 20, y: 622, rotation: deg(-3) },
-	{ id: NOTE_IDS.jon, author: 'Jon', text: 'Site ships before the spring menu. Keep the tokens simple.', x: 1340, y: 312, rotation: deg(2) },
+	{ id: NOTE_IDS.maya, author: 'Maya', text: 'Client kept pointing at the handmade cups in the kickoff.', x: 30, y: 596, rotation: deg(-3) },
+	{ id: NOTE_IDS.jon, author: 'Jon', text: 'Site ships before the spring menu. Keep the tokens simple.', x: 790, y: 590, rotation: deg(2) },
 ]
 
 export function seedBoard(): Board {

@@ -1,17 +1,26 @@
 import type { Board, CanvasOp } from '../core/types'
 
+/** Opaque handle to one undoable step in the canvas history. */
+export type StepId = string
+
 /** Everything the demo engine needs from a canvas. The tldraw adapter implements it; tests use a fake. */
 export interface CanvasPort {
 	/** Replace everything with this board (no undo history). */
 	load(board: Board): void
-	/** Show ops as ghosts on top of the board, reversible with discard(). */
+	/** Show ops as ghosts on top of the board, reversible with discard(). Discards any earlier preview. */
 	preview(ops: CanvasOp[], proposalId: string): void
-	/** Keep the previewed ops as one undoable step. */
-	commit(): void
+	/** Keep the previewed ops; returns the undo step they form. */
+	commit(): StepId | null
 	/** Throw the preview away. */
 	discard(): void
-	/** Apply ops immediately (a person's own action, e.g. a vote or approval). */
-	apply(ops: CanvasOp[]): void
+	/** Apply ops immediately as their own undo step (a person's action, e.g. a vote or approval). */
+	apply(ops: CanvasOp[]): StepId
+	/** Is this step still applied (not undone)? */
+	isStepActive(step: StepId): boolean
+	/** True once if the open preview was undone by the person; the port then forgets it. */
+	previewWasUndone(): boolean
+	/** Undo the latest step, as the person's Cmd+Z would. */
+	undo(): void
 	read(): Board
 	exists(id: string): boolean
 	onChange(cb: () => void): () => void

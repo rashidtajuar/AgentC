@@ -1,11 +1,14 @@
-import { Box, type Editor, type TLShape, type TLShapeId, type TLShapePartial } from 'tldraw'
+import { Box, renderPlaintextFromRichText, type Editor, type TLRichText, type TLShape, type TLShapeId, type TLShapePartial } from 'tldraw'
 import type { Board, BoardShape, CanvasOp, DotState, Relationship } from '../core/types'
 import { useCanvasUi } from './canvasUi'
 import type { CanvasPort } from './port'
 import { arrowPartial, BOARD_TYPE, boardShapeToPartial, opsToEditorActions, toTlId } from './toPartials'
 
 const TWEEN_MS = 620
+const TAU = Math.PI * 2
 const easeOutExpo = (t: number) => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t))
+/** Signed shortest turn from a to b, so -2° → 0° never spins through 358°. */
+const shortestTurn = (a: number, b: number) => ((((b - a) % TAU) + 1.5 * TAU) % TAU) - TAU / 2
 
 function prefersReducedMotion() {
 	return typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
@@ -21,6 +24,10 @@ interface Tween {
 export function createTldrawPort(editor: Editor): CanvasPort {
 	let mark: string | null = null
 	let raf = 0
+	let tweens: Tween[] = []
+	// tldraw keeps undo stops on its history stack; a stop still there means its step is applied
+	const markOnUndoStack = (id: string) =>
+		(editor as unknown as { getMarkIdMatching(s: string): string | null }).getMarkIdMatching(id) === id
 
 	const meta = (s: TLShape) => (s.meta ?? {}) as Record<string, unknown>
 	const getById = (id: string) => editor.getShape(toTlId(id))
@@ -28,34 +35,44 @@ export function createTldrawPort(editor: Editor): CanvasPort {
 	function stopTween() {
 		if (raf) cancelAnimationFrame(raf)
 		raf = 0
+		tweens = []
 	}
 
-	function runTweens(tweens: Tween[]) {
+	function tweenAt(t: number) {
+		const k = easeOutExpo(t)
+		editor.updateShapes(
+			tweens
+				.filter((tw) => editor.getShape(tw.id))
+				.map(
+					(tw) =>
+						({
+							id: tw.id,
+							type: tw.type,
+							x: tw.from.x + (tw.to.x - tw.from.x) * k,
+							y: tw.from.y + (tw.to.y - tw.from.y) * k,
+							rotation: tw.from.rotation + shortestTurn(tw.from.rotation, tw.to.rotation) * k,
+						}) as TLShapePartial
+				)
+		)
+	}
+
+	/** Land every moving card at its destination now (used when a preview is accepted mid-move). */
+	function finishTween() {
+		if (tweens.length) tweenAt(1)
 		stopTween()
-		if (!tweens.length) return
-		const apply = (t: number) => {
-			const k = easeOutExpo(t)
-			editor.updateShapes(
-				tweens
-					.filter((tw) => editor.getShape(tw.id))
-					.map(
-						(tw) =>
-							({
-								id: tw.id,
-								type: tw.type,
-								x: tw.from.x + (tw.to.x - tw.from.x) * k,
-								y: tw.from.y + (tw.to.y - tw.from.y) * k,
-								rotation: tw.from.rotation + (tw.to.rotation - tw.from.rotation) * k,
-							}) as TLShapePartial
-					)
-			)
-		}
-		if (prefersReducedMotion()) return apply(1)
+	}
+
+	function runTweens(next: Tween[]) {
+		stopTween()
+		if (!next.length) return
+		tweens = next
+		if (prefersReducedMotion()) return finishTween()
 		const start = performance.now()
 		const tick = (now: number) => {
-			const t = Math.min(1, (now - start) / TWEEN_MS)
-			apply(t)
-			raf = t < 1 ? requestAnimationFrame(tick) : 0
+			const t = Math.min(1, Math.max(0, (now - start) / TWEEN_MS))
+			tweenAt(t)
+			if (t < 1) raf = requestAnimationFrame(tick)
+			else stopTween()
 		}
 		raf = requestAnimationFrame(tick)
 	}
@@ -109,7 +126,7 @@ export function createTldrawPort(editor: Editor): CanvasPort {
 	}
 
 	function moveShapes(moves: { id: string; x: number; y: number; rotation?: number; parentId?: string }[], ghost: boolean) {
-		const tweens: Tween[] = []
+		const next: Tween[] = []
 		for (const m of moves) {
 			const s = getById(m.id)
 			if (!s) continue
@@ -125,15 +142,19 @@ export function createTldrawPort(editor: Editor): CanvasPort {
 				const k = Math.min(220 / p.w, 232 / p.h)
 				editor.updateShape({ id: now.id, type: 'image', props: { w: p.w * k, h: p.h * k } } as TLShapePartial)
 			}
-			if (ghost) editor.updateShape({ id: now.id, type: now.type, meta: { ...meta(now), ghost: true } } as TLShapePartial)
-			tweens.push({
+			if (ghost) {
+				// tldraw's own shapes (e.g. a dropped image) can't draw our ghost style, so fade them instead
+				const native = !now.type.startsWith('cc-')
+				editor.updateShape({ id: now.id, type: now.type, ...(native ? { opacity: 0.5 } : {}), meta: { ...meta(now), ghost: true } } as TLShapePartial)
+			}
+			next.push({
 				id: now.id,
 				type: now.type,
 				from: { x: now.x, y: now.y, rotation: now.rotation },
 				to: { x: m.x, y: m.y, rotation: m.rotation ?? now.rotation },
 			})
 		}
-		runTweens(tweens)
+		runTweens(next)
 	}
 
 	function applyActions(ops: CanvasOp[], ghost: boolean) {
@@ -161,15 +182,24 @@ export function createTldrawPort(editor: Editor): CanvasPort {
 			const type = BOARD_TYPE[s.type]
 			if (!type) continue
 			const parent = editor.getShape(s.parentId as TLShapeId)
+			const p = s.props as Record<string, unknown>
+			const props =
+				s.type === 'note'
+					? {
+							text: renderPlaintextFromRichText(editor, p.richText as TLRichText),
+							author: (m.author as string | undefined) ?? (p.color === 'light-blue' ? 'ai' : ''),
+						}
+					: p
 			shapes.push({
 				id: boardId,
 				type,
 				x: s.x,
 				y: s.y,
 				rotation: s.rotation,
+				...(typeof p.w === 'number' && typeof p.h === 'number' && s.type !== 'note' ? { w: p.w, h: p.h } : {}),
 				...(parent ? { parentId: (meta(parent).boardId as string | undefined) ?? parent.id } : {}),
 				...(m.tags ? { tags: m.tags as string[] } : {}),
-				props: s.props as Record<string, unknown>,
+				props,
 			})
 			if (m.dot) dots[boardId] = m.dot as DotState
 			if (m.votes) votes[boardId] = m.votes as string[]
@@ -182,7 +212,7 @@ export function createTldrawPort(editor: Editor): CanvasPort {
 		if (!boxes.length) return
 		const bounds = Box.Common(boxes)
 		const vp = editor.getViewportScreenBounds()
-		const inset = 88
+		const inset = 36
 		const zoom = Math.min(1, (vp.w - inset * 2) / bounds.w, (vp.h - inset * 2) / bounds.h)
 		editor.zoomToBounds(bounds, {
 			inset,
@@ -218,8 +248,8 @@ export function createTldrawPort(editor: Editor): CanvasPort {
 			applyActions(ops, true)
 		},
 		commit() {
-			if (!mark) return
-			stopTween()
+			if (!mark) return null
+			finishTween()
 			const ghosts = editor.getCurrentPageShapes().filter((s) => meta(s).ghost || meta(s).ghostDot)
 			editor.updateShapes(
 				ghosts.map((s) => {
@@ -229,23 +259,53 @@ export function createTldrawPort(editor: Editor): CanvasPort {
 					return partial as TLShapePartial
 				})
 			)
-			editor.squashToMark(mark)
+			// the preview's stop mark now heads this step: one undo takes the whole proposal back
+			const step = mark
 			mark = null
+			return step
 		},
 		discard() {
 			stopTween()
-			if (mark) editor.bailToMark(mark)
+			if (mark && markOnUndoStack(mark)) editor.bailToMark(mark)
 			mark = null
 		},
 		apply(ops) {
+			// a direct action is never folded into an open preview or into the previous step
+			if (mark) port.discard()
+			const step = editor.markHistoryStoppingPoint('apply')
 			applyActions(ops, false)
+			return step
+		},
+		isStepActive(step) {
+			return markOnUndoStack(step)
+		},
+		previewWasUndone() {
+			if (!mark || markOnUndoStack(mark)) return false
+			stopTween()
+			mark = null
+			return true
+		},
+		undo() {
+			editor.undo()
 		},
 		read,
 		exists(id) {
 			return !!getById(id)
 		},
 		onChange(cb) {
-			return editor.store.listen(() => cb(), { scope: 'document', source: 'all' })
+			// tldraw notifies before it updates its undo stack, so report once the change has settled
+			let queued = false
+			return editor.store.listen(
+				() => {
+					if (queued) return
+					queued = true
+					queueMicrotask(() => {
+						queued = false
+						cb()
+					})
+				},
+				{ scope: 'document', source: 'all' }
+			)
 		},
 		focus(ids) {
 			focus(ids)

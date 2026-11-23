@@ -22,7 +22,7 @@ describe('demo store', () => {
 		const s = make().getState()
 		expect(port.calls[0]).toBe('load')
 		expect(s.beat).toBe(0)
-		expect(s.messages.at(-1)?.text).toBe(COPY.greeting)
+		expect(s.messages.at(-1)?.text).toBe(COPY.greeting(10, 4))
 		expect(s.chips).toEqual([BEATS[0].chip])
 		expect(s.pending).toBeUndefined()
 	})
@@ -34,7 +34,7 @@ describe('demo store', () => {
 		expect(port.calls).toContain('preview:prop-organize')
 		expect(s.pending?.id).toBe('prop-organize')
 		expect(s.messages.at(-1)?.text).toBe(COPY.organize.message)
-		expect(s.messages.at(-1)?.thinkingShown).toBe(COPY.organize.thinking.length)
+		expect(s.messages.at(-1)?.thinkingShown).toBe(COPY.organize.thinking(10).length)
 	})
 
 	it('accept commits, clears pending and advances the beat', async () => {
@@ -80,12 +80,67 @@ describe('demo store', () => {
 		const store = make()
 		await store.getState().send(BEATS[0].chip!)
 		store.getState().accept()
-		port.simulateUndo(seedBoard())
+		port.undo()
 		await settle()
 		const s = store.getState()
 		expect(s.beat).toBe(0)
 		expect(s.pending?.id).toBe('prop-organize')
 		expect(port.calls.filter((c) => c === 'preview:prop-organize').length).toBe(2)
+		expect(port.board.shapes.some((x) => x.type === 'direction')).toBe(true) // re-offered as ghosts
+		expect(seedBoard().shapes.length).toBeLessThan(port.board.shapes.length)
+	})
+
+	it('deleting an accepted AI shape by hand is not an undo', async () => {
+		const store = make()
+		store.getState().jumpTo(1)
+		await store.getState().send(BEATS[1].chip!)
+		store.getState().accept()
+		port.deleteShapes(['note-gap-editorial'])
+		await settle()
+		expect(store.getState().beat).toBe(2)
+		expect(store.getState().pending).toBeUndefined()
+		expect(store.getState().messages.at(-1)?.text).not.toMatch(/Undone/)
+	})
+
+	it('undo while a suggestion is previewing clears it', async () => {
+		const store = make()
+		await store.getState().send(BEATS[0].chip!)
+		port.undo()
+		await settle()
+		expect(store.getState().pending).toBeUndefined()
+		expect(store.getState().chips).toEqual([BEATS[0].chip])
+	})
+
+	it('each vote, the approval and the PR are their own undo steps', async () => {
+		const store = make()
+		store.getState().jumpTo(2)
+		await store.getState().askVote()
+		port.undo()
+		await settle()
+		expect(port.board.votes['dir-warm']).toEqual(['Maya'])
+		expect(port.board.shapes.some((s) => s.type === 'direction')).toBe(true)
+	})
+
+	it('approving Warm while the gaps suggestion is waiting keeps the decision', async () => {
+		const store = make()
+		store.getState().jumpTo(1)
+		await store.getState().send(BEATS[1].chip!)
+		expect(store.getState().pending?.id).toBe('prop-gaps')
+		await store.getState().approveDirection('dir-warm')
+		await settle()
+		expect(port.board.shapes.some((s) => s.id === 'decision-warm')).toBe(true)
+		expect(port.board.dots['dir-warm']).toBe('approved')
+		expect(port.board.shapes.some((s) => s.id === 'note-gap-editorial')).toBe(false)
+		expect(store.getState().pending?.id).toBe('prop-links')
+	})
+
+	it('Approve on another direction always answers, even after Warm is approved', async () => {
+		const store = make()
+		store.getState().jumpTo(3)
+		const before = store.getState().messages.length
+		await store.getState().approveDirection('dir-playful')
+		expect(store.getState().messages.length).toBe(before + 1)
+		expect(store.getState().messages.at(-1)?.text).toBe(COPY.notInDemo)
 	})
 
 	it('approving Editorial replies "not in demo" and changes nothing', async () => {
@@ -147,7 +202,7 @@ describe('demo store', () => {
 		await m.releaseAll()
 		await sending
 		const s = store.getState()
-		expect(s.messages.map((x) => x.text)).toEqual([COPY.greeting])
+		expect(s.messages.map((x) => x.text)).toEqual([COPY.greeting(10, 4)])
 		expect(s.pending).toBeUndefined()
 		expect(s.busy).toBe(false)
 	})
@@ -166,5 +221,9 @@ describe('demo store', () => {
 		await store.getState().showConnections()
 		expect(port.highlighted).toEqual(expect.arrayContaining(['dir-warm', 'decision-warm', 'pr-42']))
 		expect(store.getState().beat).toBe(6)
+		expect(store.getState().chips).toEqual(['Clear highlight'])
+		store.getState().clearHighlight()
+		expect(port.highlighted).toBeNull()
+		expect(store.getState().chips).toEqual(['Show connections'])
 	})
 })

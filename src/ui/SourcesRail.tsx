@@ -13,10 +13,10 @@ const GROUPS: { title: string; match: (s: BoardShape) => boolean }[] = [
 const KIND_TAG: Record<string, string> = { photo: 'photo', swatch: 'palette', specimen: 'type', texture: 'pattern' }
 
 function labelOf(s: BoardShape) {
-	if (s.type === 'pull-request') return { name: `#${s.props.number} ${s.props.title}`, ext: 'PR' }
-	if (s.type === 'artifact') return { name: String(s.props.name), ext: String(s.props.ext) }
+	if (s.type === 'pull-request') return { name: `#${s.props.number} ${s.props.title}`, ext: 'PR', isKind: true }
+	if (s.type === 'artifact') return { name: String(s.props.name), ext: String(s.props.ext), isKind: false }
 	const kind = String(s.props.kind ?? 'photo')
-	return { name: String(s.props.title ?? 'Image'), ext: KIND_TAG[kind] ?? 'img' }
+	return { name: String(s.props.title ?? 'Image'), ext: KIND_TAG[kind] ?? 'photo', isKind: true }
 }
 
 export function SourcesRail() {
@@ -42,13 +42,13 @@ export function SourcesRail() {
 							</h3>
 							<ul className="cc-src-list">
 								{items.map((s) => {
-									const { name, ext } = labelOf(s)
+									const { name, ext, isKind } = labelOf(s)
 									const dot = board?.dots[s.id]
 									return (
 										<li key={s.id}>
 											<button type="button" className="cc-src-item" onClick={() => ctx?.port.focus([s.id])} title={`Show ${name} on the board`}>
 												<span className="cc-src-item__name">{name}</span>
-												<span className="cc-src-item__ext">{ext}</span>
+												<span className={`cc-src-item__ext${isKind ? ' cc-src-item__ext--kind' : ''}`}>{ext}</span>
 												{dot ? <Dot state={dot} size="s" /> : <span className="cc-src-item__nodot" />}
 											</button>
 										</li>

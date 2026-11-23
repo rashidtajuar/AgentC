@@ -56,6 +56,27 @@ describe('ScriptedPlanner', () => {
 		expect(r.commitOps).toBeUndefined()
 	})
 
+	it('only a plain, affirmative "approve" approves', () => {
+		for (const prompt of [
+			"Don't approve anything yet, what are we missing?",
+			'Which direction should we pick?',
+			'Can you select the references with red in them?',
+			'should we approve warm?',
+			'please address the brief',
+		]) {
+			const r = planner.plan(prompt, ctx(boardAtBeat(2), 2))
+			expect(r.intent, prompt).not.toBe('approve')
+			expect(r.commitOps, prompt).toBeUndefined()
+		}
+		expect(planner.plan('approve warm', ctx(boardAtBeat(2), 2)).intent).toBe('approve')
+		expect(planner.plan("Don't approve, what's missing?", ctx(boardAtBeat(1), 1)).proposal?.id).toBe('prop-gaps')
+	})
+
+	it('approving Editorial after Warm is approved still gets the not-in-demo reply', () => {
+		const r = planner.plan('approve editorial', ctx(boardAtBeat(3), 3))
+		expect(r.message).toBe(COPY.notInDemo)
+	})
+
 	it('approving Warm & tactile commits the decision and proposes 3 links', () => {
 		const r = planner.plan('Approve Warm & tactile', ctx(boardAtBeat(2), 2))
 		expect(r.intent).toBe('approve')

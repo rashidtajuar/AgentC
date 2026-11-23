@@ -9,9 +9,9 @@ export const PROJECT = {
 }
 
 export const PEOPLE = {
-	you: { name: 'You', role: 'Creative lead', initials: 'Y', hue: '#e5432b' },
-	maya: { name: 'Maya', role: 'Designer', initials: 'M', hue: '#2b57e8' },
-	jon: { name: 'Jon', role: 'Developer', initials: 'J', hue: '#1c9a57' },
+	you: { name: 'You', role: 'Creative lead', initials: 'Y' },
+	maya: { name: 'Maya', role: 'Designer', initials: 'M' },
+	jon: { name: 'Jon', role: 'Developer', initials: 'J' },
 } as const
 
 export interface PhotoCredit {
@@ -88,12 +88,12 @@ export type DirectionId = (typeof DIRECTIONS)[number]['id']
 export const APPROVABLE_DIRECTION: DirectionId = 'dir-warm'
 
 export const COPY = {
-	greeting:
-		'Hi — I can see 10 references and 4 linked files for Halden Coffee. Want me to sort the references into directions?',
+	greeting: (refs: number, files: number) =>
+		`Hi — I can see ${refs} references and ${files} linked files for Halden Coffee. Want me to sort the references into directions?`,
 	organize: {
-		thinking: ['Reading 10 references', 'Comparing colour, material and type', 'Drafting three directions'],
+		thinking: (refs: number) => [`Reading ${refs} references`, 'Comparing colour, material and type', 'Drafting three directions'],
 		message:
-			'I grouped the references into three directions — Warm & tactile, Editorial and Playful modern — and lined your files up underneath. Nothing has moved yet: preview it, then accept or discard.',
+			'I grouped the references into three directions — Warm & tactile, Editorial and Playful modern — and lined your files up underneath. They’re only suggestions on the board for now: accept to keep them, or discard.',
 		summary: 'Create 3 directions · sort references · tidy 4 files',
 	},
 	gaps: {
@@ -126,8 +126,8 @@ export const COPY = {
 	},
 	executed:
 		'Pull request #42 is open on northbound/halden-website and linked to the decision on the wall. Nothing was merged or deployed.',
-	connections:
-		"Here's how Warm & tactile travels: 4 references → the approved decision → logo, Web UI and theme.ts → pull request #42.",
+	connections: (refs: number) =>
+		`Here's how Warm & tactile travels: ${refs} references → the approved decision → logo, Web UI and theme.ts → pull request #42.`,
 	help: 'In this demo I can sort references into directions, spot gaps, run a team vote, and turn the approved direction into a reviewed code change. Try the suggestion below.',
 	notInDemo:
 		'In this demo the team has voted for Warm & tactile — in the real product any direction can be approved.',

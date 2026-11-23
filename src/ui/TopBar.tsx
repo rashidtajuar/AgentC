@@ -43,7 +43,7 @@ export function TopBar() {
 			<div className="cc-topbar__right">
 				<div className="cc-faces" aria-label="3 people on this board">
 					{Object.values(PEOPLE).map((p) => (
-						<span key={p.name} className="cc-face" style={{ ['--hue' as string]: p.hue }} title={`${p.name} · ${p.role}`}>
+						<span key={p.name} className="cc-face" title={`${p.name} · ${p.role}`}>
 							{p.initials}
 						</span>
 					))}
