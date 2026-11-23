@@ -207,18 +207,26 @@ export function createTldrawPort(editor: Editor): CanvasPort {
 		return { shapes, relationships, dots, votes }
 	}
 
+	/**
+	 * Fit shapes into the canvas area that is actually free: a margin on three sides and a taller
+	 * reserve at the bottom for tldraw's toolbar and action bar. Wide groups sit at the top.
+	 */
 	function focus(ids: string[], opts: { immediate?: boolean } = {}) {
 		const boxes = ids.map((id) => editor.getShapePageBounds(toTlId(id))).filter((b): b is Box => !!b)
 		if (!boxes.length) return
 		const bounds = Box.Common(boxes)
 		const vp = editor.getViewportScreenBounds()
-		const inset = 36
-		const zoom = Math.min(1, (vp.w - inset * 2) / bounds.w, (vp.h - inset * 2) / bounds.h)
-		editor.zoomToBounds(bounds, {
-			inset,
-			targetZoom: Math.max(0.2, zoom),
-			...(opts.immediate || prefersReducedMotion() ? { immediate: true } : { animation: { duration: 560 } }),
-		})
+		const SIDE = 36
+		const TOP = 32
+		const BOTTOM = 118
+		const availW = Math.max(100, vp.w - SIDE * 2)
+		const availH = Math.max(100, vp.h - TOP - BOTTOM)
+		const z = Math.max(0.2, Math.min(1, availW / bounds.w, availH / bounds.h))
+		const padX = (availW - bounds.w * z) / 2
+		// wide, short groups align to the top so the empty space lands behind the toolbar, not above the work
+		const padY = bounds.w / bounds.h > availW / availH ? 0 : (availH - bounds.h * z) / 2
+		const camera = { x: (SIDE + padX) / z - bounds.x, y: (TOP + padY) / z - bounds.y, z }
+		editor.setCamera(camera, opts.immediate || prefersReducedMotion() ? { immediate: true } : { animation: { duration: 560 } })
 	}
 
 	const port: CanvasPort = {

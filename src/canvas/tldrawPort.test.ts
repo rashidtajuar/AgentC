@@ -56,7 +56,7 @@ describe('tldraw port', () => {
 		port.preview(organizeOps(), 'p1')
 		port.commit()
 		const beans = editor.getShape(toTlId('ref-beans'))!
-		expect([beans.x, beans.y, tilt(beans.rotation)]).toEqual([24, 386, 0])
+		expect([beans.x, beans.y, tilt(beans.rotation)]).toEqual([24, 424, 0])
 		expect(beans.parentId).toBe(toTlId('dir-warm'))
 	})
 

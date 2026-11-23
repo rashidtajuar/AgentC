@@ -16,7 +16,7 @@ export const SIZES = {
 	reference: { w: 220, h: 232 },
 	artifact: { w: 280, h: 176 },
 	note: { w: 200, h: 200 },
-	frame: { w: 520, h: 648 },
+	frame: { w: 520, h: 686 },
 	decision: { w: 520, h: 150 },
 	pr: { w: 300, h: 150 },
 }
@@ -25,13 +25,13 @@ export const SIZES = {
 export const LAYOUT = {
 	frameX: { 'dir-warm': 0, 'dir-editorial': 580, 'dir-playful': 1160 } as Record<DirectionId, number>,
 	frameY: 0,
-	slot: (index: number) => ({ x: 24 + (index % 2) * 248, y: 140 + Math.floor(index / 2) * 246 }),
-	rowB: 724,
-	rowC: 1050,
+	slot: (index: number) => ({ x: 24 + (index % 2) * 248, y: 178 + Math.floor(index / 2) * 246 }),
+	rowB: 762,
+	rowC: 1088,
 	files: { 'art-logo': 0, 'art-webui': 500, 'art-theme': 1000, 'art-brief': 1500 } as Record<string, number>,
 	notes: { 'note-maya': 1200, 'note-jon': 1440 } as Record<string, number>,
-	decision: { x: 0, y: 724 },
-	pr: { x: 780, y: 724 },
+	decision: { x: 0, y: 762 },
+	pr: { x: 780, y: 762 },
 }
 
 interface ReferenceSeed {

@@ -299,7 +299,7 @@
 /* the name row leaves room for the stickers stuck in the corner */
 .cc-dir__title-row { padding-right: 150px; }
 .cc-dir__title-row { display: flex; align-items: center; gap: 10px; min-height: 26px; }
-.cc-dir__name { margin: 0; font-size: 24px; font-weight: 650; letter-spacing: -0.024em; }
+.cc-dir__name { margin: 0; font-size: 30px; font-weight: 650; letter-spacing: -0.026em; line-height: 1.1; }
 .cc-dir__approved {
 	font-size: var(--cc-text-m);
 	font-weight: 600;
@@ -317,10 +317,10 @@
 .cc-dir[data-ghost='true'] .cc-dir__stickers { top: -16px; right: -14px; }
 .cc-dir__why {
 	margin: 0;
-	font-size: 15px;
-	line-height: 1.45;
+	font-size: 17px;
+	line-height: 1.4;
 	color: var(--cc-ink-muted);
-	max-width: 44ch;
+	max-width: 38ch;
 }
 .cc-dir__foot { display: flex; align-items: center; gap: 10px; min-height: 30px; }
 .cc-dir__votes { font-size: var(--cc-text-s); color: var(--cc-ink-faint); }
