@@ -46,7 +46,13 @@ export function applyOps(board: Board, ops: CanvasOp[]): Board {
 				shapes = shapes.map((s) => {
 					const m = byId.get(s.id)
 					if (!m) return s
-					return { ...s, x: m.x, y: m.y, ...(m.parentId !== undefined ? { parentId: m.parentId } : {}) }
+					return {
+						...s,
+						x: m.x,
+						y: m.y,
+						...(m.rotation !== undefined ? { rotation: m.rotation } : {}),
+						...(m.parentId !== undefined ? { parentId: m.parentId } : {}),
+					}
 				})
 				break
 			}

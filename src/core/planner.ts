@@ -1,4 +1,6 @@
-import type { ActionProposal, BeatId, Board } from './types'
+import type { ActionProposal, BeatId, Board, CanvasOp } from './types'
+
+export type PlanIntent = 'propose' | 'vote' | 'approve' | 'show-connections' | 'help' | 'not-in-demo'
 
 export interface PlanContext {
 	beat: BeatId
@@ -11,6 +13,11 @@ export interface PlanResult {
 	thinking: string[]
 	message: string
 	proposal?: ActionProposal
+	/** Changes a person made directly (e.g. approving a direction): applied immediately, no preview */
+	commitOps?: CanvasOp[]
+	/** Shapes to highlight on the canvas */
+	highlightIds?: string[]
+	intent: PlanIntent
 	chips: string[]
 }
 

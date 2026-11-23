@@ -66,6 +66,7 @@ export interface BoardShape {
 	y: number
 	w?: number
 	h?: number
+	rotation?: number
 	parentId?: string
 	tags?: string[]
 	props: Record<string, unknown>
@@ -73,7 +74,7 @@ export interface BoardShape {
 
 export type CanvasOp =
 	| { op: 'createFrame'; id: string; name: string; rationale: string; x: number; y: number; w: number; h: number }
-	| { op: 'moveShapes'; moves: { id: string; x: number; y: number; parentId?: string }[] }
+	| { op: 'moveShapes'; moves: { id: string; x: number; y: number; rotation?: number; parentId?: string }[] }
 	| { op: 'createNote'; id: string; text: string; x: number; y: number; parentId?: string; author: string }
 	| { op: 'createShape'; shape: BoardShape }
 	| { op: 'connect'; id: string; from: string; to: string; kind: RelationshipKind }
