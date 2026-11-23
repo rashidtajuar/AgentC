@@ -22,43 +22,43 @@ export interface PhotoCredit {
 	sourceUrl: string
 }
 
-const unsplash = (photo: string, w = 560) =>
-	`https://images.unsplash.com/${photo}?auto=format&fit=crop&w=${w}&h=${Math.round(w * 0.82)}&q=80`
+/** Bundled copies (public/refs, see CREDITS.md there) so the demo never depends on a live connection. */
+const local = (name: string) => `${import.meta.env.BASE_URL}refs/${name}.jpg`
 
 const UTM = '?utm_source=connected_canvas_demo&utm_medium=referral'
 
-/** Unsplash photos (Unsplash License), hotlinked as Unsplash asks, with credit. */
+/** Unsplash photos (Unsplash License), credited on every card. */
 export const PHOTOS: Record<string, PhotoCredit> = {
 	cup: {
-		url: unsplash('photo-1782351094137-14cef7134c18'),
+		url: local('cup'),
 		alt: 'A rustic handmade ceramic cup on a wooden table',
 		author: 'Adam Rasheed',
 		authorUrl: `https://unsplash.com/@adamrasheed${UTM}`,
 		sourceUrl: `https://unsplash.com/photos/n9I_Xp7nyCk${UTM}`,
 	},
 	glaze: {
-		url: unsplash('photo-1782351254515-d7a53dc60b7f'),
+		url: local('glaze'),
 		alt: 'Rustic ceramic cup with red glaze on a wooden surface',
 		author: 'Adam Rasheed',
 		authorUrl: `https://unsplash.com/@adamrasheed${UTM}`,
 		sourceUrl: `https://unsplash.com/photos/dpmUrwiS4q4${UTM}`,
 	},
 	beans: {
-		url: unsplash('photo-1628546459752-b92e62a89cd8'),
+		url: local('beans'),
 		alt: 'Roasted coffee beans on a black surface',
 		author: 'Brunno Tozzo',
 		authorUrl: `https://unsplash.com/@tozzo${UTM}`,
 		sourceUrl: `https://unsplash.com/photos/JU9pA9SS_P8${UTM}`,
 	},
 	book: {
-		url: unsplash('photo-1526050071463-2c476b162a4c'),
+		url: local('book'),
 		alt: 'An open book with minimalist graphic layouts',
 		author: 'Isabella Fischer',
 		authorUrl: `https://unsplash.com/@izzyfisch_${UTM}`,
 		sourceUrl: `https://unsplash.com/photos/6ast1xZ9YJY${UTM}`,
 	},
 	magazine: {
-		url: unsplash('photo-1617050318658-a9a3175e34cb'),
+		url: local('magazine'),
 		alt: 'An editorial magazine layout on a white table',
 		author: 'Brands&People',
 		authorUrl: `https://unsplash.com/@brandsandpeople${UTM}`,

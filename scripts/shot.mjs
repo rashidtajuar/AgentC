@@ -1,5 +1,8 @@
 import { chromium } from '@playwright/test'
-const [, , out = '.impeccable/review/desktop.png', w = '1440', h = '900', ...steps] = process.argv
+// usage: node scripts/shot.mjs <out.png|-> <width> <height> [steps...]
+// "-" skips the final capture (use shot:<path> steps instead), so a stepped run never overwrites another file
+const [, , out, w = '1440', h = '900', ...steps] = process.argv
+if (!out) throw new Error('first argument must be the output path, or - for none')
 const browser = await chromium.launch({ executablePath: '/usr/bin/google-chrome' })
 const page = await browser.newPage({ viewport: { width: +w, height: +h } })
 const errors = []
@@ -24,6 +27,6 @@ for (const s of steps) {
 	}
 	if (s.startsWith('key:')) { await page.keyboard.press(s.slice(4)); continue }
 }
-await page.screenshot({ path: out })
+if (out !== '-') await page.screenshot({ path: out })
 console.log('errors:', errors.filter(e => !/unsplash|ERR_|Failed to load resource/.test(e)).slice(0, 8))
 await browser.close()
