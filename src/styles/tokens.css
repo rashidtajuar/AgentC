@@ -1,0 +1,85 @@
+/* Crit Wall — design tokens.
+   Graphite felt shell around a pale cool pinboard; white prints; dot-sticker state colours. */
+
+:root {
+	/* Shell: graphite felt */
+	--cc-graphite-950: #121417;
+	--cc-graphite-900: #1a1d21;
+	--cc-graphite-850: #20242a;
+	--cc-graphite-800: #272b31;
+	--cc-graphite-700: #343941;
+	--cc-graphite-600: #454b55;
+	--cc-shell-text: #eceef1;
+	--cc-shell-muted: #a3a9b3;
+	--cc-shell-faint: #767d88;
+	--cc-shell-line: rgba(236, 238, 241, 0.08);
+
+	/* Board and prints */
+	--cc-board: #e4e7eb;
+	--cc-board-deep: #d9dde2;
+	--cc-print: #ffffff;
+	--cc-print-strip: #f4f5f7;
+	--cc-ink: #16181b;
+	--cc-ink-muted: #5a616b;
+	--cc-ink-faint: #8a919b;
+	--cc-hairline: rgba(22, 24, 27, 0.1);
+	--cc-hairline-strong: rgba(22, 24, 27, 0.18);
+
+	/* Dot stickers — state only */
+	--cc-dot-cobalt: #2b57e8;
+	--cc-dot-cobalt-soft: rgba(43, 87, 232, 0.12);
+	--cc-dot-green: #1c9a57;
+	--cc-dot-green-soft: rgba(28, 154, 87, 0.12);
+	--cc-dot-amber: #e89a1a;
+	--cc-dot-amber-soft: rgba(232, 154, 26, 0.14);
+	--cc-dot-vermilion: #e5432b;
+	--cc-dot-vermilion-soft: rgba(229, 67, 43, 0.12);
+
+	/* Marker note stock */
+	--cc-sticky: #fff3b8;
+
+	/* Type */
+	--cc-font-ui: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+	--cc-font-mono: 'Geist Mono Variable', ui-monospace, 'SFMono-Regular', monospace;
+	--cc-text-xs: 11px;
+	--cc-text-s: 12px;
+	--cc-text-m: 13px;
+	--cc-text-l: 15px;
+	--cc-text-xl: 18px;
+
+	/* Space, radius, depth */
+	--cc-space-1: 4px;
+	--cc-space-2: 8px;
+	--cc-space-3: 12px;
+	--cc-space-4: 16px;
+	--cc-space-5: 20px;
+	--cc-space-6: 24px;
+	--cc-space-7: 32px;
+	--cc-space-8: 40px;
+	--cc-radius-s: 6px;
+	--cc-radius-m: 10px;
+	--cc-radius-l: 14px;
+	--cc-shadow-print: 0 1px 1px rgba(16, 18, 22, 0.06), 0 4px 10px -2px rgba(16, 18, 22, 0.1);
+	--cc-shadow-print-lift: 0 2px 2px rgba(16, 18, 22, 0.06), 0 14px 28px -8px rgba(16, 18, 22, 0.22);
+	--cc-shadow-pop: 0 1px 2px rgba(0, 0, 0, 0.2), 0 18px 40px -12px rgba(0, 0, 0, 0.45);
+
+	/* Motion */
+	--cc-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+	--cc-ease-press: cubic-bezier(0.34, 1.56, 0.64, 1);
+	--cc-dur-fast: 140ms;
+	--cc-dur: 260ms;
+	--cc-dur-slow: 520ms;
+
+	/* Layout */
+	--cc-topbar-h: 52px;
+	--cc-sources-w: 248px;
+	--cc-ai-w: 368px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:root {
+		--cc-dur-fast: 0ms;
+		--cc-dur: 0ms;
+		--cc-dur-slow: 0ms;
+	}
+}
