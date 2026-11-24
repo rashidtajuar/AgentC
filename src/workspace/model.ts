@@ -31,12 +31,23 @@ export function sourceUrl(value: string): string {
 	return url.href
 }
 
+export const SOURCE_TYPES: Partial<Record<ToolKind, string>> = {
+	doc: 'Document / web link',
+	figma: 'Figma design',
+	repo: 'Repository / code',
+	image: 'Image reference',
+	folder: 'Folder link',
+	pdf: 'PDF',
+	file: 'File link',
+	link: 'Inspiration link',
+}
+
 export function sourceShape(name: string, url: string, tool: ToolKind, index: number): BoardShape {
 	if (!name.trim() || name.trim().length > 120) throw new Error('Give the source a name of 1–120 characters.')
-	if (!['doc', 'repo', 'figma', 'image'].includes(tool)) throw new Error('Choose a supported source type.')
+	if (!Object.hasOwn(SOURCE_TYPES, tool)) throw new Error('Choose a supported source type.')
 	return {
 		id: crypto.randomUUID(), type: 'artifact', x: 80 + (index % 3) * 320, y: 80 + Math.floor(index / 3) * 220, w: 280, h: 176,
-		props: { name: name.trim(), location: sourceUrl(url), tool, ext: 'LINK', status: 'unverified', summary: 'Link only · source not read or synced', preview: 'link', capabilities: ['open'] },
+		props: { name: name.trim(), location: sourceUrl(url), tool, ext: tool === 'pdf' ? 'PDF' : 'LINK', status: 'unverified', summary: 'Link only · source not read or synced', preview: 'link', capabilities: ['open'] },
 	}
 }
 

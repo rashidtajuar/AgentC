@@ -21,7 +21,7 @@ interface Tween {
 	to: { x: number; y: number; rotation: number }
 }
 
-export function createTldrawPort(editor: Editor): CanvasPort {
+export function createTldrawPort(editor: Editor, { animateMoves = true } = {}): CanvasPort {
 	let mark: string | null = null
 	let markProposal: string | null = null
 	let raf = 0
@@ -78,7 +78,7 @@ export function createTldrawPort(editor: Editor): CanvasPort {
 		stopTween()
 		if (!next.length) return
 		tweens = next
-		if (prefersReducedMotion()) return finishTween()
+		if (!animateMoves || prefersReducedMotion()) return finishTween()
 		const start = performance.now()
 		const tick = (now: number) => {
 			// the preview was undone between frames: stop moving cards, keep the targets for a redo

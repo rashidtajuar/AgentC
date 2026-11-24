@@ -21,6 +21,13 @@ npm run dev        # http://localhost:5173
 
 No license key is needed in development.
 
+## Canvas views
+
+- **Moodboard** hides connected arrows so the references read as a pinboard. **Node map** reveals the same board's connections. Switch at any time without moving or duplicating items.
+- In Node map, Shift-click two canvas items and choose **Connect selected items**. Connections have undo and persist with the canvas. You can also use tldraw's Arrow tool to draw an attached connection by hand.
+- Pin a Folder link, PDF, File link or Inspiration link from Project tools, or drop a local image onto the canvas. Sources lists pinned links and opens originals in their own tabs.
+- Use **Canvas appearance** to pick a background and show or hide the grid. These preferences are per project. Hide either panel from the top bar or choose **Focus canvas** to hide both.
+
 ## Local workspace data
 
 `src/workspace/model.ts` owns validation, the versioned project index (`agentc:projects:v1`), separate native tldraw snapshots (`agentc:document:<project-id>`) and the canvas-only planner. Full snapshots retain drawing, assets, bindings and camera state. Snapshot revisions detect stale writes and storage events pause a tab when another tab changes its canvas. Corrupt or unrecognized data is preserved and blocks editing. Save failures are visible and stop further edits.
@@ -73,7 +80,7 @@ Reuse the Vercel Git-linked `agentc` project for `rashidtajuar/AgentC`. `main` i
 - **tldraw SDK** — free in development. Any deployed link needs a license key in `VITE_TLDRAW_LICENSE_KEY` (see `.env.example`): a free [hobby key](https://tldraw.dev/get-a-license/hobby) covers this prototype and keeps the "made with tldraw" watermark; the commercial product will need a paid commercial license. Never hide the watermark.
 - `@tldraw/assets` 5.6.2 ships without its translations folder; `vite.config.ts` stubs those imports (English is built into tldraw).
 - Fonts (all SIL OFL): Geist, Geist Mono, Gloock, Bricolage Grotesque, Young Serif, plus tldraw's bundled fonts.
-- Icons: [Lucide](https://lucide.dev) (ISC).
+- Icons: [Lucide](https://lucide.dev) and locally bundled [Simple Icons brand marks](public/brands/CREDITS.md).
 - Reference photos from [Unsplash](https://unsplash.com) (Unsplash License), hotlinked with credit on each card: Adam Rasheed, Brunno Tozzo, Isabella Fischer, Brands&People. They need an internet connection; offline they show a placeholder.
 
 ### Replace before showing real clients

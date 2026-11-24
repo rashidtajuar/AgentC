@@ -377,3 +377,6 @@
 
 /* keep the drawing chrome out of the way while the review sheet is open */
 .cc-canvas[data-sheet='open'] .tlui-layout__bottom { visibility: hidden; }
+
+.cc-art__tool, .cc-tools__name { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
+.cc-source-icon { display: inline-block; flex: none; background: currentColor; mask-size: contain; mask-repeat: no-repeat; mask-position: center; }

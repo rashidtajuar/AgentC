@@ -50,6 +50,12 @@ typography:
     fontSize: "17px"
     fontWeight: 400
     lineHeight: 1.4
+  specimen-gloock:
+    fontFamily: "'Gloock', serif"
+  specimen-bricolage:
+    fontFamily: "'Bricolage Grotesque Variable', sans-serif"
+  specimen-young-serif:
+    fontFamily: "'Young Serif', serif"
   title:
     fontFamily: "'Geist Variable', ui-sans-serif, system-ui, sans-serif"
     fontSize: "15px"
@@ -223,7 +229,7 @@ The density is a working tool's density: 13px body, 30px controls, 4px spacing g
 - Four dot-sticker colours, each a state, and nothing else saturated in the UI.
 - AI proposals are ghost prints until accepted.
 - Sticking a dot is the signature motion: drop in large, press, settle.
-- Geist and Geist Mono only; tools are named in text and file-type tags, never logos.
+- Geist and Geist Mono only; source marks pair with tool names and file-type tags.
 
 ## Colors
 
@@ -284,7 +290,7 @@ A three-column app grid: Sources rail (248px), canvas (fluid), Assistant panel (
 
 Overlays sit on the canvas, not in new columns: the review sheet docks to the canvas's right edge (12px inset, max 560px wide, non-modal) and hides tldraw's bottom toolbar while open; the artifact popover (288px) anchors below its print and flips above when there is no room; toasts stack centred 132px above the canvas bottom; presence cursors glide in their own layer.
 
-Responsive behaviour: at 1100px and below the Sources rail is dropped and the Assistant narrows to 320px; at 760px and below the layout stacks top bar, canvas, then the Assistant at 44vh, and the wordmark, crumbs and faces hide. Desktop 1280–1920 is the target.
+Responsive behaviour: at 1100px and below the Sources rail is dropped and the Assistant narrows to 320px; at 760px and below the layout stacks top bar, canvas, then the Assistant at 44vh, and the wordmark, crumbs and faces hide. Desktop 1280–1920 is the target for the sample. In saved projects, panel toggles stay in the top bar and either panel can dock below the canvas on narrow screens. Focus canvas hides both panels; Restore panels brings them back.
 
 ## Elevation & Depth
 
@@ -331,6 +337,11 @@ Quiet and solid; one light primary per group on graphite.
 - **Pull-request print:** Source strip reading "Pull request #n", green dot, branch in mono, green status pill and diff counts.
 - **Proposal card (shell):** Graphite-850, 12px radius, cobalt border at 45% and the proposal glow; a 13px cobalt dot, summary, one note line, Accept/Review plus Discard.
 
+### Workspace Canvas Views
+- **Moodboard:** White prints with paper shadows. Fully attached arrows and authored relationships are hidden while retaining their geometry and bindings.
+- **Node map:** The same canvas shows saved connections. Artifact prints use a thin ink outline and small neutral connection markers. Image and note shapes get a thin outline. Select two items and connect them from the top bar, or use the canvas arrow tool.
+- **Appearance:** A quiet dotted surface is the workspace default. Five light backgrounds preserve contrast for existing canvas ink. Grid visibility, background, and view are local per project.
+
 ### Inputs / Fields
 - **Composer:** Graphite-850, 14px radius, shell-line border that brightens to 24% on focus-within; borderless textarea, cobalt caret, faint placeholder; a 30px send square at 9px radius in shell-text, graphite-700 when empty.
 
@@ -370,7 +381,7 @@ The popover is the one light surface off the board-ground: a white 12px-radius c
 - **Don't** use cobalt, green, amber or vermilion as decoration, accent, category or brand colour.
 - **Don't** let tldraw's blue selection accent through; it reads as a proposal.
 - **Don't** set interface text in Gloock, Bricolage Grotesque or Young Serif; they are specimen content only.
-- **Don't** use brand logos of Figma, Adobe, GitHub or any tool.
-- **Don't** use purple gradients, sparkle icons, glowing or glass AI panels, or a dot-grid board.
+- **Do** use small monochrome source logos as identifiers alongside visible names. Generic file, PDF, folder and image icons describe the content type.
+- **Don't** use purple gradients, sparkle icons, glowing or glass AI panels, or a high-contrast grid that competes with the work.
 - **Don't** hide, cover or restyle the tldraw watermark.
 - **Don't** darken the board or lighten the faint levels further: `shell-faint` measures 5.1:1 on graphite-900 and 4.7:1 on graphite-850, `ink-faint` 5.3:1 on white and 4.6:1 inside a direction frame. These are the AA floor for 11–12px text.

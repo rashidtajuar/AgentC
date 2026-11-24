@@ -1,4 +1,5 @@
 import { BaseBoxShapeUtil, T } from 'tldraw'
+import { SourceIcon } from '../../ui/SourceIcon'
 import { Dot } from '../../ui/Dot'
 import { emit, CC_EVENTS } from '../canvasUi'
 import { Print } from './Print'
@@ -10,6 +11,10 @@ export const TOOL_NAME: Record<string, string> = {
 	repo: 'Repository',
 	doc: 'Document',
 	image: 'Image',
+	folder: 'Folder',
+	file: 'File',
+	pdf: 'PDF',
+	link: 'Inspiration',
 }
 
 export class ArtifactShapeUtil extends BaseBoxShapeUtil<ArtifactShape> {
@@ -66,7 +71,7 @@ export class ArtifactShapeUtil extends BaseBoxShapeUtil<ArtifactShape> {
 		return (
 			<Print shape={shape} className="cc-art" label={`${TOOL_NAME[tool] ?? tool} file: ${name}`}>
 				<div className="cc-art__strip">
-					<span className="cc-art__tool">{TOOL_NAME[tool] ?? tool}</span>
+					<span className="cc-art__tool"><SourceIcon tool={tool} location={location} size={13} />{TOOL_NAME[tool] ?? tool}</span>
 					<span className="cc-ext">{ext}</span>
 					<span className="cc-art__dot">
 						<Dot state={dot} size="s" label={shape.props.status === 'unverified' ? 'Source link · not read or synced' : undefined} />
@@ -74,7 +79,7 @@ export class ArtifactShapeUtil extends BaseBoxShapeUtil<ArtifactShape> {
 				</div>
 				<div className="cc-art__body">
 					<div className={`cc-art__preview cc-prev--${preview}`} aria-hidden="true">
-						<ArtifactPreview kind={preview} />
+						{preview === 'link' ? <SourceIcon tool={tool} size={28} kindOnly /> : <ArtifactPreview kind={preview} />}
 					</div>
 					<div className="cc-art__text">
 						<span className="cc-art__name">{name}</span>

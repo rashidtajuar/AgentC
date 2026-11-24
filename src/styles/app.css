@@ -615,3 +615,5 @@ body {
 .cc-pop__btn:hover, .cc-pop__btn:focus-visible { background: var(--cc-print-strip); outline: none; }
 .cc-pop__btn svg { color: var(--cc-ink-muted); }
 .cc-pop__count { margin-left: auto; font-size: var(--cc-text-xs); color: var(--cc-ink-faint); font-variant-numeric: tabular-nums; }
+
+.cc-route-loading { display: grid; min-height: 100dvh; place-items: center; color: var(--cc-shell-muted); }

@@ -6,7 +6,7 @@ vi.mock('tldraw', async () => {
 	return { ...actual, Tldraw: () => <div data-testid="tldraw" /> }
 })
 
-import { DemoApp } from './App'
+import DemoApp from './DemoApp'
 
 describe('App', () => {
 	it('renders the four shell regions', () => {

@@ -1,6 +1,7 @@
 import type { BoardShape } from '../core/types'
 import { useBoard, useDemoCtx } from '../state/DemoContext'
 import { Dot } from './Dot'
+import { SourceIcon } from './SourceIcon'
 
 const GROUPS: { title: string; match: (s: BoardShape) => boolean }[] = [
 	{ title: 'Figma', match: (s) => s.type === 'artifact' && s.props.tool === 'figma' },
@@ -63,15 +64,15 @@ export function SourcesRail() {
 				<h3 className="cc-src-group__title">Connected tools</h3>
 				<ul className="cc-tools__list">
 					<li>
-						<span className="cc-tools__name">Figma</span>
+						<span className="cc-tools__name"><SourceIcon tool="figma" /> Figma</span>
 						<span className="cc-tools__can">Read only</span>
 					</li>
 					<li>
-						<span className="cc-tools__name">GitHub</span>
+						<span className="cc-tools__name"><SourceIcon tool="repo" location="github://" /> GitHub</span>
 						<span className="cc-tools__can">Can open pull requests</span>
 					</li>
 					<li>
-						<span className="cc-tools__name">Desktop app</span>
+						<span className="cc-tools__name"><SourceIcon tool="desktop" /> Desktop app</span>
 						<span className="cc-tools__can">Opens local files</span>
 					</li>
 				</ul>
