@@ -27,6 +27,7 @@ export const RELATION_LABEL: Record<RelationshipKind, string> = {
 	'developed-into': 'developed into',
 	'implemented-in': 'implemented in',
 	'included-in': 'included in',
+	'relates-to': 'relates to',
 }
 
 /** Board ids are plain strings; shapes a person added on the canvas keep their tldraw id. */
@@ -135,7 +136,9 @@ export function arrowPartial(rel: Relationship, ghost: boolean): TLShapePartial 
 		opacity: ghost ? 0.85 : 1,
 		meta: { boardId: rel.id, rel: rel.kind, from: rel.from, to: rel.to, ghost },
 		props: {
-			richText: toRichText(RELATION_LABEL[rel.kind]),
+			// General links need room for their line and arrowhead between nearby cards.
+			// People can still give them a label with tldraw's native arrow editor.
+			richText: toRichText(rel.kind === 'relates-to' ? '' : RELATION_LABEL[rel.kind]),
 			color: ghost ? 'blue' : 'black',
 			labelColor: ghost ? 'blue' : 'black',
 			dash: ghost ? 'dashed' : 'solid',

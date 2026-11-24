@@ -52,6 +52,7 @@ export function TopBar() {
 					{count > 0 ? <span className="cc-review-dot" aria-hidden="true" /> : null}
 					Review changes ({count})
 				</button>
+				<a className="cc-btn cc-btn--ghost" href="/">Your projects</a>
 				<DemoMenu />
 			</div>
 		</header>

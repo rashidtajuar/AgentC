@@ -1,4 +1,5 @@
 import { BaseBoxShapeUtil, T } from 'tldraw'
+import { SourceIcon } from '../../ui/SourceIcon'
 import { Dot } from '../../ui/Dot'
 import { emit, CC_EVENTS } from '../canvasUi'
 import { Print } from './Print'
@@ -10,6 +11,10 @@ export const TOOL_NAME: Record<string, string> = {
 	repo: 'Repository',
 	doc: 'Document',
 	image: 'Image',
+	folder: 'Folder',
+	file: 'File',
+	pdf: 'PDF',
+	link: 'Inspiration',
 }
 
 export class ArtifactShapeUtil extends BaseBoxShapeUtil<ArtifactShape> {
@@ -50,6 +55,10 @@ export class ArtifactShapeUtil extends BaseBoxShapeUtil<ArtifactShape> {
 		return false
 	}
 
+	override onBeforeDuplicate(_original: ArtifactShape, duplicate: ArtifactShape) {
+		return { ...duplicate, meta: { ...duplicate.meta, boardId: duplicate.id, ghost: false, ghostDot: false } }
+	}
+
 	override onDoubleClick(shape: ArtifactShape) {
 		emit(CC_EVENTS.openArtifact, { boardId: ccMeta(shape).boardId, shapeId: shape.id })
 		// returning a (no-op) change tells tldraw the double-click was handled, so it won't start a text shape
@@ -62,15 +71,15 @@ export class ArtifactShapeUtil extends BaseBoxShapeUtil<ArtifactShape> {
 		return (
 			<Print shape={shape} className="cc-art" label={`${TOOL_NAME[tool] ?? tool} file: ${name}`}>
 				<div className="cc-art__strip">
-					<span className="cc-art__tool">{TOOL_NAME[tool] ?? tool}</span>
+					<span className="cc-art__tool"><SourceIcon tool={tool} location={location} size={13} />{TOOL_NAME[tool] ?? tool}</span>
 					<span className="cc-ext">{ext}</span>
 					<span className="cc-art__dot">
-						<Dot state={dot} size="s" />
+						<Dot state={dot} size="s" label={shape.props.status === 'unverified' ? 'Source link · not read or synced' : undefined} />
 					</span>
 				</div>
 				<div className="cc-art__body">
 					<div className={`cc-art__preview cc-prev--${preview}`} aria-hidden="true">
-						<ArtifactPreview kind={preview} />
+						{preview === 'link' ? <SourceIcon tool={tool} size={28} kindOnly /> : <ArtifactPreview kind={preview} />}
 					</div>
 					<div className="cc-art__text">
 						<span className="cc-art__name">{name}</span>

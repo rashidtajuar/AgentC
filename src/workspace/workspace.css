@@ -1,0 +1,66 @@
+.cc-projects { min-height: 100dvh; padding: 32px max(24px, calc((100vw - 1120px) / 2)); background: var(--cc-graphite-950); color: var(--cc-shell-text); overflow-y: auto; height: 100dvh; }
+.cc-projects__header { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+.cc-workspace-brand { font-size: 22px; font-weight: 650; letter-spacing: -.04em; }
+.cc-workspace-brand span { display: inline-block; margin-left: 12px; padding-left: 16px; border-left: 1px solid var(--cc-shell-line); color: var(--cc-shell-muted); font-size: 13px; font-weight: 400; letter-spacing: 0; }
+.cc-projects a { text-decoration: none; }
+.cc-projects__intro { padding: 76px 0 48px; }
+.cc-projects__intro h1 { margin: 0 0 20px; font-size: clamp(36px, 5vw, 60px); line-height: 1.05; letter-spacing: -.05em; font-weight: 550; }
+.cc-projects__intro p { margin: 0; font-size: 17px; line-height: 1.65; color: var(--cc-shell-muted); }
+.cc-projects__body { display: grid; grid-template-columns: minmax(240px, 380px) minmax(0, 1fr); gap: 80px; padding-bottom: 48px; }
+.cc-projects h2 { margin: 0 0 24px; font-size: 17px; font-weight: 550; letter-spacing: -.02em; }
+.cc-projects h2 span { color: var(--cc-shell-faint); font-size: 13px; margin-left: 8px; }
+.cc-projects form, .cc-workspace form fieldset { display: flex; flex-direction: column; gap: 10px; }
+.cc-projects label, .cc-workspace label { font-size: 12px; color: var(--cc-shell-muted); }
+.cc-projects label span { color: var(--cc-shell-faint); float: right; }
+.cc-projects input, .cc-projects textarea, .cc-workspace input, .cc-workspace select { width: 100%; min-width: 0; border: 1px solid var(--cc-shell-line); border-radius: 8px; padding: 10px 12px; font: inherit; color: var(--cc-shell-text); background: var(--cc-graphite-850); }
+.cc-projects textarea { resize: vertical; min-height: 100px; max-height: 300px; }
+.cc-projects input, .cc-projects textarea { margin-bottom: 10px; }
+.cc-projects input:focus-visible, .cc-projects textarea:focus-visible, .cc-workspace input:focus-visible, .cc-workspace select:focus-visible { outline: 2px solid var(--cc-dot-cobalt); outline-offset: 2px; }
+.cc-projects input::placeholder, .cc-projects textarea::placeholder, .cc-workspace input::placeholder { color: var(--cc-shell-faint); }
+.cc-projects form > button { align-self: flex-start; height: 36px; margin-top: 4px; }
+.cc-projects__list ul { margin: 0; padding: 0; list-style: none; }
+.cc-projects__list li { border-bottom: 1px solid var(--cc-shell-line); }
+.cc-projects__list li:first-child { border-top: 1px solid var(--cc-shell-line); }
+.cc-projects__list li button { display: flex; gap: 16px; align-items: center; width: 100%; padding: 20px 8px; text-align: left; border: 0; background: transparent; color: var(--cc-shell-text); cursor: pointer; font: inherit; }
+.cc-projects__list li button:hover { background: var(--cc-graphite-850); }
+.cc-projects__list li button > span { flex: 1; min-width: 0; }
+.cc-projects__list strong { display: block; font-size: 15px; font-weight: 550; overflow-wrap: anywhere; }
+.cc-projects__list small { display: block; margin-top: 6px; color: var(--cc-shell-muted); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.cc-projects__empty { border-top: 1px solid var(--cc-shell-line); padding: 40px 0; color: var(--cc-shell-faint); }
+.cc-projects__empty p { color: var(--cc-shell-muted); margin-bottom: 6px; }
+.cc-projects__footer { padding: 24px 0; border-top: 1px solid var(--cc-shell-line); color: var(--cc-shell-faint); font-size: 12px; line-height: 1.6; }
+.cc-workspace-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 550; }
+.cc-workspace-save { font-size: 12px; color: var(--cc-shell-muted); }
+.cc-workspace-panel { overflow-y: auto; padding: 20px 16px; display: flex; flex-direction: column; gap: 28px; min-height: 0; }
+.cc-workspace-panel h3 { font-size: 13px; font-weight: 600; margin: 0 0 12px; }
+.cc-workspace-panel p { margin: 0 0 12px; line-height: 1.65; }
+.cc-workspace-hint { color: var(--cc-shell-muted); font-size: 12px; line-height: 1.6; margin: 12px 8px; }
+.cc-workspace-panel .cc-workspace-hint { margin: 0 0 16px; }
+.cc-workspace-brief { color: var(--cc-shell-muted); white-space: pre-wrap; overflow-wrap: anywhere; }
+.cc-workspace fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.cc-workspace fieldset .cc-btn { align-self: flex-start; margin-top: 6px; }
+.cc-workspace input, .cc-workspace select { padding: 8px 10px; margin-bottom: 4px; }
+.cc-workspace-sources { margin: 0; padding: 0; list-style: none; }
+.cc-workspace-sources li { display: grid; grid-template-columns: minmax(0, 1fr) 28px; border-bottom: 1px solid var(--cc-shell-line); padding: 8px; }
+.cc-workspace-sources button { font: inherit; background: transparent; border: 0; text-align: left; color: var(--cc-shell-text); cursor: pointer; padding: 6px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cc-workspace-sources a { color: var(--cc-shell-muted); display: grid; place-items: center; }
+.cc-workspace-sources small { grid-column: 1 / -1; font-size: 11px; color: var(--cc-shell-faint); }
+.cc-workspace-empty { position: absolute; top: 32px; left: 32px; right: 32px; pointer-events: none; color: var(--cc-ink-muted); }
+.cc-workspace-empty h2 { font-size: 28px; font-weight: 500; letter-spacing: -.03em; margin: 0 0 8px; }
+.cc-workspace-empty p { margin: 0; font-size: 13px; }
+.cc-workspace-error { color: #ffb3a6; background: rgba(229,67,43,.1); border: 1px solid rgba(229,67,43,.35); border-radius: 8px; padding: 12px; font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; }
+.cc-workspace-error button { margin-top: 10px; }
+.cc-workspace-planner { border-top: 1px solid var(--cc-shell-line); padding-top: 24px; }
+.cc-workspace .cc-proposal { box-shadow: none; }
+@media (max-width: 760px) {
+	.cc-projects { padding: 24px; }
+	.cc-projects__intro { padding: 52px 0 36px; }
+	.cc-projects__body { grid-template-columns: 1fr; gap: 40px; }
+	.cc-workspace-brand span { display: none; }
+	.cc-projects__header .cc-btn { font-size: 12px; }
+	.cc-workspace .cc-tag { display: none; }
+	.cc-workspace .cc-topbar { gap: 8px; padding: 0 10px; }
+	.cc-workspace-save { max-width: 104px; text-align: right; font-size: 11px; }
+	.cc-workspace .cc-topbar__right { flex-shrink: 0; }
+	.cc-workspace .cc-workspace-panel { gap: 20px; }
+}

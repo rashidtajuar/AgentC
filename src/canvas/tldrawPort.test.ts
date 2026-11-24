@@ -26,6 +26,18 @@ function setup() {
 }
 
 describe('tldraw port', () => {
+	it('gives native duplicates distinct source identities and layout targets', () => {
+		const port = setup()
+		const original = port.read().shapes.find((s) => s.type === 'artifact')!
+		editor.duplicateShapes([toTlId(original.id)])
+		const sources = port.read().shapes.filter((s) => s.type === 'artifact')
+		expect(new Set(sources.map((s) => s.id)).size).toBe(sources.length)
+		const duplicate = sources.find((s) => s.id !== original.id && s.props.name === original.props.name)!
+		port.preview([{ op: 'moveShapes', moves: [{ id: duplicate.id, x: 900, y: 400 }] }], 'duplicate-layout')
+		port.commit()
+		expect(editor.getShape(toTlId(duplicate.id))!.x).toBe(900)
+		expect(editor.getShape(toTlId(original.id))!.x).toBe(original.x)
+	})
 	it('accepting a preview clears every ghost, and one undo takes the whole proposal back', async () => {
 		const port = setup()
 		const cupBefore = editor.getShape(toTlId('ref-cup'))!

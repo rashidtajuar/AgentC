@@ -17,7 +17,7 @@ async function accept(page: Page) {
 
 test('full journey by chips', async ({ page }) => {
 	const errors = collectErrors(page)
-	await page.goto('/')
+	await page.goto('/?demo=1')
 	await expect(page.getByRole('button', { name: 'Review changes (0)' })).toBeVisible()
 
 	await ai(page).getByRole('button', { name: 'Organize into directions' }).click()
@@ -47,7 +47,7 @@ test('full journey by chips', async ({ page }) => {
 })
 
 test('typing works as well as chips, and unrelated text gets help', async ({ page }) => {
-	await page.goto('/')
+	await page.goto('/?demo=1')
 	const box = page.getByLabel('Ask the assistant about this board')
 	await box.fill('what time is it in Tokyo?')
 	await box.press('Enter')
@@ -58,11 +58,11 @@ test('typing works as well as chips, and unrelated text gets help', async ({ pag
 })
 
 test('undo after accept re-offers the suggestion; restart returns a clean wall', async ({ page }) => {
-	await page.goto('/')
+	await page.goto('/?demo=1')
 	await ai(page).getByRole('button', { name: 'Organize into directions' }).click()
 	await accept(page)
-	await page.locator('.tl-canvas').click({ position: { x: 40, y: 40 } })
-	await page.keyboard.press('ControlOrMeta+z')
+	// Use the visible canvas control; keyboard registration follows focus in a React effect.
+	await page.getByRole('button', { name: /^Undo —/ }).click()
 	await expect(ai(page)).toContainText('Undone. The suggestion is back', { timeout: 5_000 })
 	await expect(page.getByRole('button', { name: 'Review changes (1)' })).toBeVisible()
 
@@ -73,7 +73,7 @@ test('undo after accept re-offers the suggestion; restart returns a clean wall',
 })
 
 test('approving another direction politely declines', async ({ page }) => {
-	await page.goto('/')
+	await page.goto('/?demo=1')
 	await page.getByRole('button', { name: 'Demo' }).click()
 	await page.getByRole('menuitem', { name: /Gaps noted/ }).click()
 	await page.getByLabel('Direction: Editorial').getByRole('button', { name: 'Approve direction' }).click()

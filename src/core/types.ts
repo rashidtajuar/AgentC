@@ -1,6 +1,6 @@
 // Connected Canvas — domain model. No UI dependencies: shared by the demo and the real product.
 
-export type ToolKind = 'figma' | 'illustrator' | 'repo' | 'doc' | 'image'
+export type ToolKind = 'figma' | 'illustrator' | 'repo' | 'doc' | 'image' | 'folder' | 'file' | 'pdf' | 'link'
 export type ArtifactStatus = 'linked' | 'changed' | 'missing' | 'inaccessible'
 export type Capability = 'open' | 'preview' | 'read' | 'propose-edit'
 
@@ -22,6 +22,7 @@ export type RelationshipKind =
 	| 'developed-into'
 	| 'implemented-in'
 	| 'included-in'
+	| 'relates-to'
 
 export interface Relationship {
 	id: string
