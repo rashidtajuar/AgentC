@@ -19,6 +19,8 @@ export interface CanvasPort {
 	isStepActive(step: StepId): boolean
 	/** True once if the open preview was undone by the person; the port then forgets it. */
 	previewWasUndone(): boolean
+	/** True once if a redo brought back the preview previewWasUndone() reported; the port adopts it again. */
+	previewWasRedone(): boolean
 	/** Undo the latest step, as the person's Cmd+Z would. */
 	undo(): void
 	read(): Board

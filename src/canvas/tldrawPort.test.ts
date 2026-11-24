@@ -139,4 +139,59 @@ describe('demo engine on the real canvas', () => {
 		expect(store.getState().pending?.id).toBe('prop-organize')
 		expect(port.exists('dir-warm')).toBe(true) // back as ghosts
 	})
+
+	/** what a click on the canvas leaves in tldraw's history: a stop plus a selection change */
+	const click = (id: string) => {
+		editor.markHistoryStoppingPoint('selecting')
+		editor.select(toTlId(id))
+	}
+	const ghosts = () => editor.getCurrentPageShapes().filter((s) => (s.meta as { ghost?: boolean }).ghost)
+
+	it('clicking the board during a preview still leaves one undo per accepted suggestion', async () => {
+		const { port, store } = demo()
+		await store.getState().send(BEATS[0].chip!)
+		click('ref-cup')
+		store.getState().accept()
+		editor.undo()
+		await frames(80)
+		expect(store.getState().committed).toHaveLength(0)
+		expect(store.getState().beat).toBe(0)
+		expect(store.getState().pending?.id).toBe('prop-organize')
+		expect(port.exists('dir-warm')).toBe(true)
+	})
+
+	it('the Undo button takes back the accepted step even after a click', async () => {
+		const { port, store } = demo()
+		await store.getState().send(BEATS[0].chip!)
+		store.getState().accept()
+		click('dir-warm')
+		store.getState().undoLast()
+		await frames(80)
+		expect(store.getState().committed).toHaveLength(0)
+		expect(store.getState().beat).toBe(0)
+		expect(port.exists('dir-warm')).toBe(true) // offered again as ghosts
+		expect(ghosts().length).toBeGreaterThan(0)
+	})
+
+	it('redo after undoing a suggestion brings it back with Accept and Discard', async () => {
+		const { port, store } = demo()
+		await store.getState().send(BEATS[0].chip!)
+		await frames(60)
+		editor.undo()
+		await frames(10)
+		expect(store.getState().pending).toBeUndefined()
+		expect(port.exists('dir-warm')).toBe(false)
+		editor.redo()
+		await frames(10)
+		expect(port.exists('dir-warm')).toBe(true)
+		expect(store.getState().pending?.id).toBe('prop-organize')
+		store.getState().accept()
+		await frames(10)
+		expect(store.getState().beat).toBe(1)
+		expect(ghosts()).toHaveLength(0)
+		editor.undo()
+		await frames(80)
+		expect(store.getState().beat).toBe(0)
+		expect(store.getState().pending?.id).toBe('prop-organize')
+	})
 })

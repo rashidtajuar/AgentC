@@ -5,7 +5,7 @@ import type { CanvasPort, StepId } from '../canvas/port'
 import { COPY, EXECUTION_STEPS, PEOPLE } from '../demo/content'
 import { BEATS, CLEAR_HIGHLIGHT_CHIP } from '../demo/scenario'
 import { boardAtBeat, chipsFor, DECISION_ID, PR_ID, PROPOSAL_IDS } from '../demo/scriptedPlanner'
-import { seedBoard } from '../demo/seed'
+import { ARTIFACT_IDS, seedBoard } from '../demo/seed'
 import { isAbort } from './delay'
 
 export interface ChatMessage {
@@ -133,7 +133,11 @@ export function createDemoStore({ planner, port, delay }: DemoDeps): DemoStore {
 			return id
 		}
 
+		// the suggestion a Cmd+Z took off the board, so a redo can put it back with Accept and Discard
+		let undonePreview: ActionProposal | null = null
+
 		function offer(p: ActionProposal) {
+			undonePreview = null
 			set({ pending: p, chips: [], run: undefined })
 			if (p.external) return
 			port.preview(p.ops, p.id)
@@ -144,6 +148,7 @@ export function createDemoStore({ planner, port, delay }: DemoDeps): DemoStore {
 
 		/** Drop a waiting canvas preview without the busy guard (internal use). */
 		function dropPending() {
+			undonePreview = null
 			const p = get().pending
 			if (!p) return
 			if (!p.external) port.discard()
@@ -165,6 +170,7 @@ export function createDemoStore({ planner, port, delay }: DemoDeps): DemoStore {
 
 		function reset(beat: BeatId) {
 			abortInFlight()
+			undonePreview = null
 			port.highlight(null)
 			set({ beat, pending: undefined, sheetOpen: false, run: undefined, toasts: [], popover: null, committed: [] })
 		}
@@ -173,8 +179,13 @@ export function createDemoStore({ planner, port, delay }: DemoDeps): DemoStore {
 		function onBoardChange() {
 			if (port.previewWasUndone()) {
 				abortInFlight()
+				undonePreview = get().pending ?? null
 				set({ pending: undefined })
 				set({ chips: chips() })
+			} else if (undonePreview && port.previewWasRedone()) {
+				abortInFlight()
+				set({ pending: undonePreview, chips: [], run: undefined })
+				undonePreview = null
 			}
 			const { committed } = get()
 			let keep = committed.length
@@ -310,7 +321,10 @@ export function createDemoStore({ planner, port, delay }: DemoDeps): DemoStore {
 
 			undoLast() {
 				if (get().busy) return
-				port.undo()
+				const last = get().committed.at(-1)
+				if (!last) return port.undo()
+				// clicks after accepting leave small history entries on top: step back until this step is gone
+				for (let i = 0; i < 25 && port.isStepActive(last.step); i++) port.undo()
 			},
 
 			openSheet() {
@@ -361,7 +375,7 @@ export function createDemoStore({ planner, port, delay }: DemoDeps): DemoStore {
 					get().toast('Nothing was merged or deployed.')
 					await delay(PACE.sheetClose, sig)
 					set({ sheetOpen: false })
-					port.focus([DECISION_ID, PR_ID])
+					port.focus([DECISION_ID, PR_ID, ARTIFACT_IDS.logo, ARTIFACT_IDS.webUi, ARTIFACT_IDS.theme])
 					await speak({ thinking: [], message: COPY.executed })
 					set({ chips: chips(5) })
 				})

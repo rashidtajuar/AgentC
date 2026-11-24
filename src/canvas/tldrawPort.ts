@@ -25,6 +25,8 @@ export function createTldrawPort(editor: Editor): CanvasPort {
 	let mark: string | null = null
 	let raf = 0
 	let tweens: Tween[] = []
+	// a preview the person undid, kept so a redo can hand it back
+	let undone: { mark: string; tweens: Tween[] } | null = null
 	// tldraw keeps undo stops on its history stack; a stop still there means its step is applied
 	const markOnUndoStack = (id: string) =>
 		(editor as unknown as { getMarkIdMatching(s: string): string | null }).getMarkIdMatching(id) === id
@@ -69,6 +71,11 @@ export function createTldrawPort(editor: Editor): CanvasPort {
 		if (prefersReducedMotion()) return finishTween()
 		const start = performance.now()
 		const tick = (now: number) => {
+			// the preview was undone between frames: stop moving cards, keep the targets for a redo
+			if (mark && !markOnUndoStack(mark)) {
+				raf = 0
+				return
+			}
 			const t = Math.min(1, Math.max(0, (now - start) / TWEEN_MS))
 			tweenAt(t)
 			if (t < 1) raf = requestAnimationFrame(tick)
@@ -223,8 +230,8 @@ export function createTldrawPort(editor: Editor): CanvasPort {
 		const availH = Math.max(100, vp.h - TOP - BOTTOM)
 		const z = Math.max(0.2, Math.min(1, availW / bounds.w, availH / bounds.h))
 		const padX = (availW - bounds.w * z) / 2
-		// wide, short groups align to the top so the empty space lands behind the toolbar, not above the work
-		const padY = bounds.w / bounds.h > availW / availH ? 0 : (availH - bounds.h * z) / 2
+		// centre in the area left between the top inset and the toolbar, so spare height splits evenly
+		const padY = (availH - bounds.h * z) / 2
 		const camera = { x: (SIDE + padX) / z - bounds.x, y: (TOP + padY) / z - bounds.y, z }
 		editor.setCamera(camera, opts.immediate || prefersReducedMotion() ? { immediate: true } : { animation: { duration: 560 } })
 	}
@@ -233,6 +240,7 @@ export function createTldrawPort(editor: Editor): CanvasPort {
 		load(board) {
 			stopTween()
 			mark = null
+			undone = null
 			useCanvasUi.getState().setHighlight(null)
 			editor.run(
 				() => {
@@ -251,6 +259,7 @@ export function createTldrawPort(editor: Editor): CanvasPort {
 			)
 		},
 		preview(ops, proposalId) {
+			undone = null
 			if (mark) port.discard()
 			mark = editor.markHistoryStoppingPoint(`proposal:${proposalId}`)
 			applyActions(ops, true)
@@ -267,9 +276,11 @@ export function createTldrawPort(editor: Editor): CanvasPort {
 					return partial as TLShapePartial
 				})
 			)
-			// the preview's stop mark now heads this step: one undo takes the whole proposal back
+			// the preview's stop mark now heads this step. Clicks during the preview add stops of their own,
+			// so fold everything after the mark into one entry: one undo takes the whole proposal back
 			const step = mark
 			mark = null
+			if (markOnUndoStack(step)) editor.squashToMark(step)
 			return step
 		},
 		discard() {
@@ -279,6 +290,7 @@ export function createTldrawPort(editor: Editor): CanvasPort {
 		},
 		apply(ops) {
 			// a direct action is never folded into an open preview or into the previous step
+			undone = null
 			if (mark) port.discard()
 			const step = editor.markHistoryStoppingPoint('apply')
 			applyActions(ops, false)
@@ -289,8 +301,18 @@ export function createTldrawPort(editor: Editor): CanvasPort {
 		},
 		previewWasUndone() {
 			if (!mark || markOnUndoStack(mark)) return false
+			undone = { mark, tweens }
 			stopTween()
 			mark = null
+			return true
+		},
+		previewWasRedone() {
+			if (!undone || !markOnUndoStack(undone.mark)) return false
+			mark = undone.mark
+			tweens = undone.tweens
+			undone = null
+			// cards caught mid-move by the undo land in their slots
+			finishTween()
 			return true
 		},
 		undo() {

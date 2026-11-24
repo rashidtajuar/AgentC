@@ -73,6 +73,9 @@ export class FakePort implements CanvasPort {
 		this.previewing = null
 		return true
 	}
+	previewWasRedone() {
+		return false // the fake keeps no redo stack
+	}
 	undo() {
 		const last = this.history.pop()
 		if (!last) return
