@@ -24,7 +24,7 @@ export function TopBar() {
 			<div className="cc-brand" aria-label="Connected Canvas">
 				<svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true">
 					<rect x="5" y="6" width="15" height="19" rx="2.5" fill="#fff" transform="rotate(-4 12 15)" />
-					<circle cx="22.5" cy="21.5" r="5" fill="var(--cc-dot-vermilion)" />
+					<circle cx="22.5" cy="21.5" r="5" fill="var(--cc-shell-muted)" />
 				</svg>
 				<span className="cc-brand__name">Connected Canvas</span>
 			</div>

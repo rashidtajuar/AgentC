@@ -1,0 +1,679 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-23T12:00:00Z",
+  "title": "Design System: Connected Canvas",
+  "extensions": {
+    "colorMeta": {
+      "graphite-950": {
+        "role": "neutral",
+        "displayName": "Graphite Felt 950",
+        "canonical": "#121417",
+        "tonalRamp": [
+          "#121417",
+          "#1a1d21",
+          "#20242a",
+          "#272b31",
+          "#343941",
+          "#454b55",
+          "#878d97",
+          "#a3a9b3"
+        ]
+      },
+      "graphite-900": {
+        "role": "neutral",
+        "displayName": "Graphite Felt 900",
+        "canonical": "#1a1d21",
+        "tonalRamp": [
+          "#121417",
+          "#1a1d21",
+          "#20242a",
+          "#272b31",
+          "#343941",
+          "#454b55",
+          "#878d97",
+          "#a3a9b3"
+        ]
+      },
+      "graphite-850": {
+        "role": "neutral",
+        "displayName": "Graphite Felt 850",
+        "canonical": "#20242a",
+        "tonalRamp": [
+          "#121417",
+          "#1a1d21",
+          "#20242a",
+          "#272b31",
+          "#343941",
+          "#454b55",
+          "#878d97",
+          "#a3a9b3"
+        ]
+      },
+      "graphite-800": {
+        "role": "neutral",
+        "displayName": "Graphite Felt 800",
+        "canonical": "#272b31",
+        "tonalRamp": [
+          "#121417",
+          "#1a1d21",
+          "#20242a",
+          "#272b31",
+          "#343941",
+          "#454b55",
+          "#878d97",
+          "#a3a9b3"
+        ]
+      },
+      "graphite-700": {
+        "role": "neutral",
+        "displayName": "Graphite Felt 700",
+        "canonical": "#343941",
+        "tonalRamp": [
+          "#121417",
+          "#1a1d21",
+          "#20242a",
+          "#272b31",
+          "#343941",
+          "#454b55",
+          "#878d97",
+          "#a3a9b3"
+        ]
+      },
+      "graphite-600": {
+        "role": "neutral",
+        "displayName": "Graphite Felt 600",
+        "canonical": "#454b55",
+        "tonalRamp": [
+          "#121417",
+          "#1a1d21",
+          "#20242a",
+          "#272b31",
+          "#343941",
+          "#454b55",
+          "#878d97",
+          "#a3a9b3"
+        ]
+      },
+      "shell-text": {
+        "role": "neutral",
+        "displayName": "Shell Text",
+        "canonical": "#eceef1",
+        "tonalRamp": [
+          "oklch(15% 0.001 258)",
+          "oklch(26% 0.002 258)",
+          "oklch(38% 0.003 258)",
+          "oklch(49% 0.004 258)",
+          "oklch(61% 0.004 258)",
+          "oklch(72% 0.003 258)",
+          "oklch(84% 0.002 258)",
+          "oklch(95% 0.001 258)"
+        ]
+      },
+      "shell-muted": {
+        "role": "neutral",
+        "displayName": "Shell Muted",
+        "canonical": "#a3a9b3",
+        "tonalRamp": [
+          "oklch(15% 0.002 261)",
+          "oklch(26% 0.006 261)",
+          "oklch(38% 0.010 261)",
+          "oklch(49% 0.014 261)",
+          "oklch(61% 0.014 261)",
+          "oklch(72% 0.010 261)",
+          "oklch(84% 0.006 261)",
+          "oklch(95% 0.002 261)"
+        ]
+      },
+      "shell-faint": {
+        "role": "neutral",
+        "displayName": "Shell Faint",
+        "canonical": "#878d97",
+        "tonalRamp": [
+          "oklch(15% 0.003 259)",
+          "oklch(26% 0.007 259)",
+          "oklch(38% 0.012 259)",
+          "oklch(49% 0.016 259)",
+          "oklch(61% 0.016 259)",
+          "oklch(72% 0.012 259)",
+          "oklch(84% 0.007 259)",
+          "oklch(95% 0.003 259)"
+        ]
+      },
+      "shell-line": {
+        "role": "neutral",
+        "displayName": "Shell Line",
+        "canonical": "rgba(236, 238, 241, 0.08)"
+      },
+      "board": {
+        "role": "neutral",
+        "displayName": "Pinboard",
+        "canonical": "#e4e7eb",
+        "tonalRamp": [
+          "oklch(15% 0.001 255)",
+          "oklch(26% 0.002 255)",
+          "oklch(38% 0.004 255)",
+          "oklch(49% 0.006 255)",
+          "oklch(61% 0.006 255)",
+          "oklch(72% 0.004 255)",
+          "oklch(84% 0.002 255)",
+          "oklch(95% 0.001 255)"
+        ]
+      },
+      "board-deep": {
+        "role": "neutral",
+        "displayName": "Pinboard Deep",
+        "canonical": "#d9dde2",
+        "tonalRamp": [
+          "oklch(15% 0.001 254)",
+          "oklch(26% 0.003 254)",
+          "oklch(38% 0.005 254)",
+          "oklch(49% 0.007 254)",
+          "oklch(61% 0.007 254)",
+          "oklch(72% 0.005 254)",
+          "oklch(84% 0.003 254)",
+          "oklch(95% 0.001 254)"
+        ]
+      },
+      "print": {
+        "role": "neutral",
+        "displayName": "Print White",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "oklch(15% 0.000 90)",
+          "oklch(26% 0.000 90)",
+          "oklch(38% 0.000 90)",
+          "oklch(49% 0.000 90)",
+          "oklch(61% 0.000 90)",
+          "oklch(72% 0.000 90)",
+          "oklch(84% 0.000 90)",
+          "oklch(95% 0.000 90)"
+        ]
+      },
+      "print-strip": {
+        "role": "neutral",
+        "displayName": "Source Strip",
+        "canonical": "#f4f5f7",
+        "tonalRamp": [
+          "oklch(15% 0.000 265)",
+          "oklch(26% 0.001 265)",
+          "oklch(38% 0.002 265)",
+          "oklch(49% 0.003 265)",
+          "oklch(61% 0.003 265)",
+          "oklch(72% 0.002 265)",
+          "oklch(84% 0.001 265)",
+          "oklch(95% 0.000 265)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#16181b",
+        "tonalRamp": [
+          "oklch(15% 0.001 258)",
+          "oklch(26% 0.002 258)",
+          "oklch(38% 0.004 258)",
+          "oklch(49% 0.006 258)",
+          "oklch(61% 0.006 258)",
+          "oklch(72% 0.004 258)",
+          "oklch(84% 0.002 258)",
+          "oklch(95% 0.001 258)"
+        ]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Ink Muted",
+        "canonical": "#5a616b",
+        "tonalRamp": [
+          "oklch(15% 0.003 257)",
+          "oklch(26% 0.007 257)",
+          "oklch(38% 0.011 257)",
+          "oklch(49% 0.016 257)",
+          "oklch(61% 0.016 257)",
+          "oklch(72% 0.011 257)",
+          "oklch(84% 0.007 257)",
+          "oklch(95% 0.003 257)"
+        ]
+      },
+      "ink-faint": {
+        "role": "neutral",
+        "displayName": "Ink Faint",
+        "canonical": "#666c75",
+        "tonalRamp": [
+          "oklch(15% 0.003 257)",
+          "oklch(26% 0.006 257)",
+          "oklch(38% 0.010 257)",
+          "oklch(49% 0.015 257)",
+          "oklch(61% 0.015 257)",
+          "oklch(72% 0.010 257)",
+          "oklch(84% 0.006 257)",
+          "oklch(95% 0.003 257)"
+        ]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "rgba(22, 24, 27, 0.1)"
+      },
+      "hairline-strong": {
+        "role": "neutral",
+        "displayName": "Hairline Strong",
+        "canonical": "rgba(22, 24, 27, 0.18)"
+      },
+      "dot-cobalt": {
+        "role": "primary",
+        "displayName": "Proposal Cobalt",
+        "canonical": "#2b57e8",
+        "tonalRamp": [
+          "oklch(15% 0.034 266)",
+          "oklch(26% 0.082 266)",
+          "oklch(38% 0.139 266)",
+          "oklch(49% 0.196 266)",
+          "oklch(61% 0.196 266)",
+          "oklch(72% 0.139 266)",
+          "oklch(84% 0.082 266)",
+          "oklch(95% 0.034 266)"
+        ]
+      },
+      "dot-cobalt-soft": {
+        "role": "primary",
+        "displayName": "Proposal Cobalt Soft",
+        "canonical": "rgba(43, 87, 232, 0.12)"
+      },
+      "dot-green": {
+        "role": "secondary",
+        "displayName": "Synced Green",
+        "canonical": "#1c9a57",
+        "tonalRamp": [
+          "oklch(15% 0.022 154)",
+          "oklch(26% 0.053 154)",
+          "oklch(38% 0.090 154)",
+          "oklch(49% 0.127 154)",
+          "oklch(61% 0.127 154)",
+          "oklch(72% 0.090 154)",
+          "oklch(84% 0.053 154)",
+          "oklch(95% 0.022 154)"
+        ]
+      },
+      "dot-green-soft": {
+        "role": "secondary",
+        "displayName": "Synced Green Soft",
+        "canonical": "rgba(28, 154, 87, 0.12)"
+      },
+      "dot-green-ink": {
+        "role": "secondary",
+        "displayName": "Green Ink",
+        "canonical": "#157244",
+        "tonalRamp": [
+          "oklch(15% 0.017 156)",
+          "oklch(26% 0.041 156)",
+          "oklch(38% 0.069 156)",
+          "oklch(49% 0.097 156)",
+          "oklch(61% 0.097 156)",
+          "oklch(72% 0.069 156)",
+          "oklch(84% 0.041 156)",
+          "oklch(95% 0.017 156)"
+        ]
+      },
+      "dot-amber": {
+        "role": "secondary",
+        "displayName": "Changed Amber",
+        "canonical": "#e89a1a",
+        "tonalRamp": [
+          "oklch(15% 0.023 72)",
+          "oklch(26% 0.056 72)",
+          "oklch(38% 0.096 72)",
+          "oklch(49% 0.135 72)",
+          "oklch(61% 0.135 72)",
+          "oklch(72% 0.096 72)",
+          "oklch(84% 0.056 72)",
+          "oklch(95% 0.023 72)"
+        ]
+      },
+      "dot-amber-soft": {
+        "role": "secondary",
+        "displayName": "Changed Amber Soft",
+        "canonical": "rgba(232, 154, 26, 0.14)"
+      },
+      "dot-vermilion": {
+        "role": "secondary",
+        "displayName": "Approved Vermilion",
+        "canonical": "#e5432b",
+        "tonalRamp": [
+          "oklch(15% 0.030 31)",
+          "oklch(26% 0.074 31)",
+          "oklch(38% 0.125 31)",
+          "oklch(49% 0.177 31)",
+          "oklch(61% 0.177 31)",
+          "oklch(72% 0.125 31)",
+          "oklch(84% 0.074 31)",
+          "oklch(95% 0.030 31)"
+        ]
+      },
+      "dot-vermilion-soft": {
+        "role": "secondary",
+        "displayName": "Approved Vermilion Soft",
+        "canonical": "rgba(229, 67, 43, 0.12)"
+      },
+      "dot-vermilion-ink": {
+        "role": "secondary",
+        "displayName": "Vermilion Ink",
+        "canonical": "#b3301c",
+        "tonalRamp": [
+          "oklch(15% 0.026 32)",
+          "oklch(26% 0.062 32)",
+          "oklch(38% 0.106 32)",
+          "oklch(49% 0.149 32)",
+          "oklch(61% 0.149 32)",
+          "oklch(72% 0.106 32)",
+          "oklch(84% 0.062 32)",
+          "oklch(95% 0.026 32)"
+        ]
+      },
+      "sticky": {
+        "role": "neutral",
+        "displayName": "Sticky Stock",
+        "canonical": "#fff3b8",
+        "tonalRamp": [
+          "oklch(15% 0.011 98)",
+          "oklch(26% 0.028 98)",
+          "oklch(38% 0.047 98)",
+          "oklch(49% 0.067 98)",
+          "oklch(61% 0.067 98)",
+          "oklch(72% 0.047 98)",
+          "oklch(84% 0.028 98)",
+          "oklch(95% 0.011 98)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Direction frame names on the board only."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Review sheet title, Decision print title."
+      },
+      "lede": {
+        "displayName": "Lede",
+        "purpose": "A direction's rationale under its name, max 38ch."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Panel titles and wordmark; artifact names (600) and reference captions (580) share the size."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Shell default, messages, buttons (560), menu and source items; max 60ch."
+      },
+      "body-small": {
+        "displayName": "Body Small",
+        "purpose": "Meta lines, notes, permission copy, step lists, quiet buttons."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Rail group headings, tags, source strips, face initials. Sentence case."
+      },
+      "mono": {
+        "displayName": "Mono",
+        "purpose": "Literal tool strings only: paths, extensions, branches, hex, token names, diffs."
+      }
+    },
+    "shadows": [
+      {
+        "name": "print",
+        "value": "0 1px 1px rgba(16, 18, 22, 0.06), 0 4px 10px -2px rgba(16, 18, 22, 0.1)",
+        "purpose": "Every print at rest on the board."
+      },
+      {
+        "name": "print-lift",
+        "value": "0 2px 2px rgba(16, 18, 22, 0.06), 0 14px 28px -8px rgba(16, 18, 22, 0.22)",
+        "purpose": "Print under the pointer; with a 2px ink ring for highlighted lineage."
+      },
+      {
+        "name": "pop",
+        "value": "0 1px 2px rgba(0, 0, 0, 0.2), 0 18px 40px -12px rgba(0, 0, 0, 0.45)",
+        "purpose": "Menus, toasts, review sheet."
+      },
+      {
+        "name": "popover-light",
+        "value": "0 1px 2px rgba(16, 18, 22, 0.12), 0 18px 40px -12px rgba(16, 18, 22, 0.35)",
+        "purpose": "The white artifact popover over the board."
+      },
+      {
+        "name": "sticker",
+        "value": "inset 0 0.5px 0 rgba(255, 255, 255, 0.35), 0 1px 1.5px rgba(16, 18, 22, 0.28)",
+        "purpose": "A dot sticker's own thickness (40px: 0 2px 4px)."
+      },
+      {
+        "name": "proposal-glow",
+        "value": "0 10px 30px -16px rgba(43, 87, 232, 0.55)",
+        "purpose": "Only under the AI proposal card."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "All state transitions, entrances and the sticking motion (--cc-ease-press is the same curve)."
+      },
+      {
+        "name": "dur-fast",
+        "value": "140ms",
+        "purpose": "Hover, press, border and colour changes."
+      },
+      {
+        "name": "dur",
+        "value": "260ms",
+        "purpose": "Message rise, menu pop, print shadow and ghost fades."
+      },
+      {
+        "name": "dur-slow",
+        "value": "520ms",
+        "purpose": "Dot sticking (scale 1.7 to 0.88 at 45% to 1) and the review sheet slide-in."
+      },
+      {
+        "name": "presence-glide",
+        "value": "900ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Teammate cursors gliding to the sticker corner before a vote lands."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "all durations 0ms; sticking animation removed",
+        "purpose": "prefers-reduced-motion: reduce."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "compact",
+        "value": "1100px",
+        "purpose": "Sources rail removed; Assistant 320px."
+      },
+      {
+        "name": "stacked",
+        "value": "760px",
+        "purpose": "Top bar, canvas, Assistant at 44vh stacked; wordmark, crumbs and faces hidden."
+      }
+    ],
+    "layout": {
+      "topbar": "52px",
+      "sourcesRail": "248px",
+      "assistantPanel": "368px",
+      "reviewSheet": "min(560px, 100% - 24px), 12px inset",
+      "popover": "288px"
+    },
+    "tldrawTheme": {
+      "--tl-color-background": "var(--cc-board)",
+      "--tl-color-selected": "var(--cc-graphite-900)",
+      "--tl-color-selected-contrast": "#ffffff",
+      "--tl-color-primary": "var(--cc-graphite-900)",
+      "--tl-color-selection-stroke": "#1f2329",
+      "--tl-color-selection-fill": "rgba(31, 35, 41, 0.06)",
+      "notes": "Human notes: tldraw note, color yellow, font draw. AI notes: tldraw note, color light-blue, font draw. Arrows: black solid; ghost arrows tldraw blue dashed."
+    },
+    "constraints": [
+      "The tldraw license watermark stays visible: the demo runs on a free hobby key (VITE_TLDRAW_LICENSE_KEY) and the watermark is a licence condition. Never hide, cover or restyle it.",
+      "No brand logos of Figma, Adobe, GitHub or other tools; tools are named in text and file-type tags.",
+      "The 'Sample data' tag stays in the top bar while content is synthetic; simulated actions say so."
+    ]
+  },
+  "components": [
+    {
+      "name": "Dot Sticker",
+      "kind": "custom",
+      "refersTo": "dot-sticker-xl",
+      "description": "The signature state marker: one component, four states, four sizes; sticks with a press-and-settle motion.",
+      "html": "<span class=\"ds-dot ds-dot--m\" data-state=\"proposal\" role=\"img\" aria-label=\"AI suggestion waiting for review\"></span><span class=\"ds-dot ds-dot--m\" data-state=\"synced\" role=\"img\" aria-label=\"Linked and in sync\"></span><span class=\"ds-dot ds-dot--m\" data-state=\"changed\" role=\"img\" aria-label=\"Source changed or missing\"></span><span class=\"ds-dot ds-dot--xl ds-dot--stick\" data-state=\"approved\" role=\"img\" aria-label=\"Approved\"></span>",
+      "css": ".ds-dot{--dot:#666c75;display:inline-block;margin:0 6px;vertical-align:middle;border-radius:50%;background:radial-gradient(circle at 34% 30%,rgba(255,255,255,.55) 0 14%,transparent 42%),var(--dot);box-shadow:0 .5px 0 rgba(255,255,255,.35) inset,0 1px 1.5px rgba(16,18,22,.28)} .ds-dot--m{width:13px;height:13px} .ds-dot--xl{width:40px;height:40px;box-shadow:0 1px 0 rgba(255,255,255,.35) inset,0 2px 4px rgba(16,18,22,.28)} .ds-dot[data-state=proposal]{--dot:var(--cc-dot-cobalt, #2b57e8)} .ds-dot[data-state=synced]{--dot:var(--cc-dot-green, #1c9a57)} .ds-dot[data-state=changed]{--dot:var(--cc-dot-amber, #e89a1a)} .ds-dot[data-state=approved]{--dot:var(--cc-dot-vermilion, #e5432b)} .ds-dot--stick{animation:ds-stick 520ms cubic-bezier(.16,1,.3,1) both} @keyframes ds-stick{0%{transform:scale(1.7) translateY(-3px);opacity:0}45%{transform:scale(.88);opacity:1}100%{transform:scale(1)}} @media (prefers-reduced-motion:reduce){.ds-dot--stick{animation:none}}"
+    },
+    {
+      "name": "Vote Sticker",
+      "kind": "custom",
+      "refersTo": "vote-sticker",
+      "description": "A teammate's vote: graphite sticker with their initial. Votes are not a state, so no state colour.",
+      "html": "<span class=\"ds-vote\" role=\"img\" aria-label=\"Maya voted\">M</span><span class=\"ds-vote\" role=\"img\" aria-label=\"Jon voted\">J</span>",
+      "css": ".ds-vote{display:inline-grid;place-items:center;width:40px;height:40px;margin-right:6px;border-radius:50%;background:radial-gradient(circle at 34% 30%,rgba(255,255,255,.22) 0 14%,transparent 44%),var(--cc-graphite-800, #272b31);color:#fff;font-family:'Geist Variable',ui-sans-serif,system-ui,sans-serif;font-size:17px;font-weight:650;box-shadow:0 1px 0 rgba(255,255,255,.2) inset,0 2px 4px rgba(16,18,22,.3)}"
+    },
+    {
+      "name": "Artifact Print",
+      "kind": "card",
+      "refersTo": "print",
+      "description": "A Living Artifact on the board: white print, paper shadow, source strip with tool name, mono file-type tag and state dot.",
+      "html": "<div class=\"ds-board\"><article class=\"ds-print\"><div class=\"ds-strip\"><span>Figma</span><span class=\"ds-ext\">.fig</span><span class=\"ds-sdot\" role=\"img\" aria-label=\"Linked and in sync\"></span></div><div class=\"ds-print__body\"><span class=\"ds-print__name\">Halden — Web UI.fig</span><span class=\"ds-print__sum\">8 frames · 24 variables</span><span class=\"ds-print__path\">figma / Northbound / Halden — Web UI</span></div></article></div>",
+      "css": ".ds-board{padding:24px;background:var(--cc-board, #e4e7eb)} .ds-print{width:280px;background:#fff;border-radius:6px;overflow:hidden;color:var(--cc-ink, #16181b);font-family:'Geist Variable',ui-sans-serif,system-ui,sans-serif;box-shadow:0 1px 1px rgba(16,18,22,.06),0 4px 10px -2px rgba(16,18,22,.1);transition:box-shadow 260ms cubic-bezier(.16,1,.3,1)} .ds-print:hover{box-shadow:0 2px 2px rgba(16,18,22,.06),0 14px 28px -8px rgba(16,18,22,.22)} .ds-strip{display:flex;align-items:center;gap:6px;height:28px;padding:0 10px;background:var(--cc-print-strip, #f4f5f7);border-bottom:1px solid rgba(22,24,27,.1);font-size:11px;font-weight:560;color:var(--cc-ink-muted, #5a616b)} .ds-ext{font-family:'Geist Mono Variable',ui-monospace,monospace;font-size:10px;font-weight:500;color:#16181b;padding:1px 5px;border-radius:4px;background:#fff;border:1px solid rgba(22,24,27,.1)} .ds-sdot{margin-left:auto;width:9px;height:9px;border-radius:50%;background:radial-gradient(circle at 34% 30%,rgba(255,255,255,.55) 0 14%,transparent 42%),var(--cc-dot-green, #1c9a57);box-shadow:0 1px 1.5px rgba(16,18,22,.28)} .ds-print__body{display:flex;flex-direction:column;gap:3px;padding:12px} .ds-print__name{font-size:15px;font-weight:600;letter-spacing:-.012em} .ds-print__sum{font-size:12px;color:#5a616b} .ds-print__path{margin-top:6px;font-family:'Geist Mono Variable',ui-monospace,monospace;font-size:10px;color:#666c75}"
+    },
+    {
+      "name": "Ghost Print",
+      "kind": "card",
+      "refersTo": "print",
+      "description": "An AI proposal on the board until accepted: dashed cobalt outline, no shadow, faded contents, 40px cobalt sticker in the corner.",
+      "html": "<div class=\"ds-board2\"><article class=\"ds-ghost\"><div class=\"ds-ghost__in\"><span class=\"ds-ghost__name\">Kiln-red glaze</span><span class=\"ds-ghost__meta\">Photo</span></div><span class=\"ds-ghost__dot\" role=\"img\" aria-label=\"AI suggestion waiting for review\"></span></article></div>",
+      "css": ".ds-board2{padding:32px;background:var(--cc-board, #e4e7eb)} .ds-ghost{position:relative;width:220px;height:140px;border-radius:6px;background:rgba(255,255,255,.6);outline:2.5px dashed var(--cc-dot-cobalt, #2b57e8);outline-offset:4px;font-family:'Geist Variable',ui-sans-serif,system-ui,sans-serif;color:#16181b} .ds-ghost__in{opacity:.5;display:flex;flex-direction:column;justify-content:flex-end;height:100%;padding:8px 10px 9px} .ds-ghost__name{font-size:15px;font-weight:580} .ds-ghost__meta{font-size:11px;color:#5a616b} .ds-ghost__dot{position:absolute;top:-16px;right:-14px;width:40px;height:40px;border-radius:50%;background:radial-gradient(circle at 34% 30%,rgba(255,255,255,.55) 0 14%,transparent 42%),var(--cc-dot-cobalt, #2b57e8);box-shadow:0 1px 0 rgba(255,255,255,.35) inset,0 2px 4px rgba(16,18,22,.28)}"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one light action in a graphite group: Accept, Review change, Approve and open pull request.",
+      "html": "<div class=\"ds-shell\"><button class=\"ds-btn ds-btn--primary\">Accept</button></div>",
+      "css": ".ds-shell{padding:16px;background:var(--cc-graphite-900, #1a1d21)} .ds-btn{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:8px;border:1px solid transparent;font-family:'Geist Variable',ui-sans-serif,system-ui,sans-serif;font-size:13px;font-weight:560;letter-spacing:-.005em;cursor:pointer;transition:background 140ms cubic-bezier(.16,1,.3,1),transform 140ms cubic-bezier(.16,1,.3,1)} .ds-btn:active{transform:translateY(1px)} .ds-btn:focus-visible{outline:2px solid #2b57e8;outline-offset:2px} .ds-btn--primary{background:var(--cc-shell-text, #eceef1);color:var(--cc-graphite-950, #121417)} .ds-btn--primary:hover{background:#fff}"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secondary action beside a primary: Discard, Cancel.",
+      "html": "<div class=\"ds-shell\"><button class=\"ds-btn ds-btn--ghost\">Discard</button></div>",
+      "css": ".ds-shell{padding:16px;background:#1a1d21} .ds-btn{display:inline-flex;align-items:center;height:30px;padding:0 12px;border-radius:8px;font-family:'Geist Variable',ui-sans-serif,system-ui,sans-serif;font-size:13px;font-weight:560;cursor:pointer;transition:color 140ms cubic-bezier(.16,1,.3,1),border-color 140ms cubic-bezier(.16,1,.3,1)} .ds-btn--ghost{background:transparent;color:var(--cc-shell-muted, #a3a9b3);border:1px solid rgba(236,238,241,.08)} .ds-btn--ghost:hover{color:#eceef1;border-color:rgba(236,238,241,.2)} .ds-btn:focus-visible{outline:2px solid #2b57e8;outline-offset:2px}"
+    },
+    {
+      "name": "Review Changes (Shell Button)",
+      "kind": "button",
+      "refersTo": "button-shell",
+      "description": "Top-bar action; when an AI proposal is pending it gains a cobalt dot and cobalt border tint.",
+      "html": "<div class=\"ds-top\"><button class=\"ds-btn ds-btn--shell\" data-active><span class=\"ds-rdot\"></span>Review changes (1)</button></div>",
+      "css": ".ds-top{padding:12px 16px;background:var(--cc-graphite-950, #121417)} .ds-btn{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:8px;font-family:'Geist Variable',ui-sans-serif,system-ui,sans-serif;font-size:13px;font-weight:560;cursor:pointer} .ds-btn--shell{background:var(--cc-graphite-850, #20242a);color:#eceef1;border:1px solid rgba(236,238,241,.08)} .ds-btn--shell:hover{background:#272b31} .ds-btn--shell[data-active]{border-color:rgba(43,87,232,.55)} .ds-btn:focus-visible{outline:2px solid #2b57e8;outline-offset:2px} .ds-rdot{width:7px;height:7px;border-radius:50%;background:#2b57e8;box-shadow:0 0 0 3px rgba(43,87,232,.22)}"
+    },
+    {
+      "name": "Suggestion Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "The Assistant's next-step offer.",
+      "html": "<div class=\"ds-shell\"><button class=\"ds-chip\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><polyline points=\"15 10 20 15 15 20\"/><path d=\"M4 4v7a4 4 0 0 0 4 4h12\"/></svg>Organize into directions</button></div>",
+      "css": ".ds-shell{padding:16px;background:#1a1d21} .ds-chip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px 0 10px;border-radius:999px;border:1px solid rgba(236,238,241,.08);background:var(--cc-graphite-850, #20242a);color:#eceef1;font-family:'Geist Variable',ui-sans-serif,system-ui,sans-serif;font-size:13px;cursor:pointer;transition:background 140ms cubic-bezier(.16,1,.3,1),border-color 140ms cubic-bezier(.16,1,.3,1)} .ds-chip svg{color:#878d97} .ds-chip:hover{background:#272b31;border-color:rgba(236,238,241,.18)} .ds-chip:focus-visible{outline:2px solid #2b57e8;outline-offset:2px}"
+    },
+    {
+      "name": "Composer",
+      "kind": "input",
+      "refersTo": "composer",
+      "description": "The Assistant's input: graphite field, cobalt caret, light send square.",
+      "html": "<div class=\"ds-shell\"><form class=\"ds-comp\"><textarea rows=\"2\" placeholder=\"Ask about this board…\" aria-label=\"Ask the assistant about this board\"></textarea><button type=\"button\" class=\"ds-send\" aria-label=\"Send\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m5 12 7-7 7 7\"/><path d=\"M12 19V5\"/></svg></button></form></div>",
+      "css": ".ds-shell{padding:16px;background:#1a1d21} .ds-comp{display:flex;align-items:flex-end;gap:8px;padding:8px 8px 8px 12px;border-radius:14px;background:var(--cc-graphite-850, #20242a);border:1px solid rgba(236,238,241,.08);transition:border-color 140ms cubic-bezier(.16,1,.3,1)} .ds-comp:focus-within{border-color:rgba(236,238,241,.24)} .ds-comp textarea{flex:1;resize:none;border:0;outline:none;background:transparent;color:#eceef1;font-family:'Geist Variable',ui-sans-serif,system-ui,sans-serif;font-size:13px;line-height:1.45;padding:4px 0;caret-color:#2b57e8} .ds-comp textarea::placeholder{color:#878d97} .ds-send{display:grid;place-items:center;width:30px;height:30px;border:0;border-radius:9px;background:#eceef1;color:#121417;cursor:pointer} .ds-send:focus-visible{outline:2px solid #2b57e8;outline-offset:2px}"
+    },
+    {
+      "name": "Proposal Card",
+      "kind": "card",
+      "refersTo": "proposal-card",
+      "description": "An AI proposal in the Assistant panel, mirroring the ghost on the board.",
+      "html": "<div class=\"ds-shell\"><div class=\"ds-prop\" role=\"group\" aria-label=\"Suggested change\"><div class=\"ds-prop__head\"><span class=\"ds-pdot\"></span><span class=\"ds-prop__sum\">Create 3 directions · sort references</span></div><p class=\"ds-prop__note\">Shown on the board as ghosts. Nothing is kept until you accept.</p><div class=\"ds-prop__act\"><button class=\"ds-b ds-b--p\">Accept</button><button class=\"ds-b ds-b--g\">Discard</button></div></div></div>",
+      "css": ".ds-shell{padding:16px;background:#1a1d21;font-family:'Geist Variable',ui-sans-serif,system-ui,sans-serif;color:#eceef1;font-size:13px} .ds-prop{display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:12px;background:#20242a;border:1px solid rgba(43,87,232,.45);box-shadow:0 10px 30px -16px rgba(43,87,232,.55)} .ds-prop__head{display:flex;align-items:center;gap:8px} .ds-pdot{width:13px;height:13px;border-radius:50%;background:radial-gradient(circle at 34% 30%,rgba(255,255,255,.55) 0 14%,transparent 42%),#2b57e8} .ds-prop__sum{font-weight:600;letter-spacing:-.01em} .ds-prop__note{margin:0;font-size:12px;line-height:1.45;color:#a3a9b3} .ds-prop__act{display:flex;gap:8px} .ds-b{height:30px;padding:0 12px;border-radius:8px;font:inherit;font-weight:560;cursor:pointer;border:1px solid transparent} .ds-b--p{background:#eceef1;color:#121417} .ds-b--p:hover{background:#fff} .ds-b--g{background:transparent;color:#a3a9b3;border-color:rgba(236,238,241,.08)} .ds-b--g:hover{color:#eceef1} .ds-b:focus-visible{outline:2px solid #2b57e8;outline-offset:2px}"
+    },
+    {
+      "name": "Top Bar",
+      "kind": "nav",
+      "refersTo": "button-shell",
+      "description": "Graphite-950 bar: wordmark, crumbs, Sample data tag, faces, Review changes, Demo menu.",
+      "html": "<header class=\"ds-tb\"><span class=\"ds-tb__name\">Connected Canvas</span><span class=\"ds-tb__sep\"></span><span class=\"ds-tb__studio\">Northbound Studio</span><span class=\"ds-tb__sl\">/</span><span class=\"ds-tb__proj\">Halden Coffee · Brand &amp; Website</span><span class=\"ds-tag\">Sample data</span><span class=\"ds-faces\"><span>Y</span><span>M</span><span>J</span></span></header>",
+      "css": ".ds-tb{display:flex;align-items:center;gap:12px;height:52px;padding:0 12px 0 16px;background:#121417;border-bottom:1px solid rgba(236,238,241,.08);color:#eceef1;font-family:'Geist Variable',ui-sans-serif,system-ui,sans-serif;font-size:13px} .ds-tb__name{font-size:15px;font-weight:650;letter-spacing:-.02em} .ds-tb__sep{width:1px;height:20px;background:rgba(236,238,241,.08)} .ds-tb__studio{color:#a3a9b3} .ds-tb__sl{color:#878d97} .ds-tb__proj{font-weight:560} .ds-tag{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:999px;border:1px solid rgba(236,238,241,.08);color:#a3a9b3;font-size:11px;font-weight:500} .ds-faces{margin-left:auto;display:flex} .ds-faces span{display:grid;place-items:center;width:26px;height:26px;margin-left:-6px;border-radius:50%;background:#272b31;box-shadow:0 0 0 2px #121417;font-size:11px;font-weight:600}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Crit Wall",
+    "overview": "The canvas is the studio's pin-up wall at review time. A graphite felt shell (top bar, Sources rail, Assistant panel) frames a pale, cool-grey pinboard. Everything on the board is a white print with a paper shadow; a print that comes from a real tool carries a thin source strip naming that tool and its file type. Human notes are marker on sticky stock, in tldraw's hand font. Decisions are made the way studios make them: by sticking dots.\n\nColour carries meaning, not decoration. The shell and board are near-neutral graphite and grey. Four dot-sticker primaries (cobalt, green, amber, vermilion) are the only saturated UI colour, and each one is a state. AI work never lands silently: it arrives as a ghost print, a dashed cobalt outline with a large cobalt sticker in its corner, and becomes solid only when a person accepts it. Saturated colour that is not a state belongs to the work pinned on the wall (photos, palettes, type specimens), never to the interface.\n\nThe density is a working tool's density: 13px body, 30px controls, 4px spacing grid, with the board left as open space. Layout follows standard app conventions; the world supplies type, palette, density and the dot move. The category default it rejects (confirmed in the direction contract and the build spec) is the grey dot-grid board with a purple-sparkle AI panel, glass panels and glowing gradients.",
+    "keyCharacteristics": [
+      "Graphite felt shell around a pale cool-grey pinboard; light board, dark frame.",
+      "White prints with a soft two-layer paper shadow and a source strip naming the tool.",
+      "Four dot-sticker colours, each a state, and nothing else saturated in the UI.",
+      "AI proposals are ghost prints until accepted.",
+      "Sticking a dot is the signature motion: drop in large, press, settle.",
+      "Geist and Geist Mono only; tools are named in text and file-type tags, never logos."
+    ],
+    "rules": [
+      {
+        "name": "The Dots Mean State Rule",
+        "body": "Cobalt = AI proposal waiting, green = linked and in sync, amber = source changed or missing, vermilion = approved. No sticker colour is used as decoration, brand accent or category colour.",
+        "section": "colors"
+      },
+      {
+        "name": "The Votes Are Not State Rule",
+        "body": "A teammate's vote is a graphite sticker with their initial, never a coloured dot. Votes inform a decision; they are not one.",
+        "section": "colors"
+      },
+      {
+        "name": "The No Borrowed Blue Rule",
+        "body": "tldraw's saturated blue accent would read as the cobalt proposal state, so selection, primary and selection stroke on the board are re-themed to graphite (`--tl-color-selected`, `--tl-color-primary` to `graphite-900`, selection stroke `#1f2329`, fill at 6% alpha).",
+        "section": "colors"
+      },
+      {
+        "name": "The UI Speaks Geist Rule",
+        "body": "Interface text is Geist or Geist Mono. Gloock, Bricolage Grotesque and Young Serif ship only as specimen content on reference prints, mini previews and the token diff's \"Aa\" sample; they are the client's work on the wall, not the product's voice.",
+        "section": "typography"
+      },
+      {
+        "name": "The Mono Is Literal Rule",
+        "body": "Mono appears only where the text is a real string from a file or tool: `.fig`, `website/src/theme.ts`, `direction/warm-tactile`, `#1F3A5F`.",
+        "section": "typography"
+      },
+      {
+        "name": "The Paper Only On The Board Rule",
+        "body": "Paper shadows belong to prints on the pinboard. Shell surfaces separate by tone and hairline; they float only when they are transient (menu, toast, sheet).",
+        "section": "elevation"
+      },
+      {
+        "name": "The Ghost Has No Shadow Rule",
+        "body": "A ghost print drops its paper shadow entirely; it is not on the wall yet.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do use a dot sticker only to state one of four states: cobalt proposal, green synced, amber changed or missing, vermilion approved.",
+      "Do show every AI change first as a ghost: dashed cobalt outline (2.5px, 4px offset) plus a 40px cobalt sticker, until a person accepts.",
+      "Do show votes as graphite initial stickers (40px, `graphite-800`).",
+      "Do put everything on the board on a white print with the print shadow; tool prints get a source strip with the tool name and a mono file-type tag.",
+      "Do keep the shell flat graphite with 8% hairlines; float only menus, toasts and the review sheet.",
+      "Do name tools in text and file-type tags (`.fig`, `.ai`, `.tsx`, `.pdf`) and label simulated actions as simulated.",
+      "Do keep the \"Sample data\" tag in the top bar while content is synthetic.",
+      "Do keep the tldraw \"made with tldraw\" / license watermark visible; the demo runs on a free hobby key and the watermark is a licence condition.",
+      "Do honour reduced motion: durations go to 0 and the sticking animation is removed."
+    ],
+    "donts": [
+      "Don't use cobalt, green, amber or vermilion as decoration, accent, category or brand colour.",
+      "Don't let tldraw's blue selection accent through; it reads as a proposal.",
+      "Don't set interface text in Gloock, Bricolage Grotesque or Young Serif; they are specimen content only.",
+      "Don't use brand logos of Figma, Adobe, GitHub or any tool.",
+      "Don't use purple gradients, sparkle icons, glowing or glass AI panels, or a dot-grid board.",
+      "Don't hide, cover or restyle the tldraw watermark.",
+      "Don't darken the board or lighten the faint levels further: shell-faint measures 5.1:1 on graphite-900 and 4.7:1 on graphite-850, ink-faint 5.3:1 on white and 4.6:1 inside a direction frame. These are the AA floor for 11–12px text."
+    ]
+  }
+}
