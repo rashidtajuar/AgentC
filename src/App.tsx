@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
-import { getAssetUrlsByImport } from '@tldraw/assets/imports.vite'
-import { DefaultStylePanel, Tldraw, useEditor, useValue, type Editor, type TLComponents, type TLUiStylePanelProps } from 'tldraw'
+import type { Editor } from 'tldraw'
+import { Canvas } from './canvas/Canvas'
+import { Workspace } from './workspace/Workspace'
 import { CC_EVENTS } from './canvas/canvasUi'
 import type { CanvasPort } from './canvas/port'
-import { customShapeUtils } from './canvas/shapes'
 import { createTldrawPort } from './canvas/tldrawPort'
 import { ScriptedPlanner } from './demo/scriptedPlanner'
 import { DemoProvider } from './state/DemoContext'
@@ -17,33 +17,11 @@ import { SourcesRail } from './ui/SourcesRail'
 import { Toasts } from './ui/Toasts'
 import { TopBar } from './ui/TopBar'
 
-const assetUrls = getAssetUrlsByImport()
-
-/** Style controls only while something is selected, so the board stays clear. */
-function SelectionStylePanel(props: TLUiStylePanelProps) {
-	const editor = useEditor()
-	const hasStyleable = useValue(
-		'styleable selection',
-		() => editor.getSelectedShapes().some((s) => !s.type.startsWith('cc-')),
-		[editor]
-	)
-	const isDrawing = useValue('drawing tool', () => editor.getCurrentToolId() !== 'select' && editor.getCurrentToolId() !== 'hand', [editor])
-	const hasSelection = hasStyleable || isDrawing
-	return hasSelection ? <DefaultStylePanel {...props} /> : null
-}
-
-const components: TLComponents = {
-	StylePanel: SelectionStylePanel,
-	MainMenu: null,
-	PageMenu: null,
-	HelpMenu: null,
-	DebugMenu: null,
-	DebugPanel: null,
-	SharePanel: null,
-	Minimap: null,
-}
-
 export default function App() {
+	return new URLSearchParams(window.location.search).has('demo') ? <DemoApp /> : <Workspace />
+}
+
+export function DemoApp() {
 	const [demo, setDemo] = useState<{ store: DemoStore; port: CanvasPort } | null>(null)
 
 	const onMount = useCallback((editor: Editor) => {
@@ -85,13 +63,7 @@ export default function App() {
 			<TopBar />
 			<SourcesRail />
 			<main className="cc-canvas" aria-label="Canvas">
-				<Tldraw
-					licenseKey={import.meta.env.VITE_TLDRAW_LICENSE_KEY}
-					shapeUtils={customShapeUtils}
-					assetUrls={assetUrls}
-					components={components}
-					onMount={onMount}
-				/>
+				<Canvas onMount={onMount} />
 				<PresenceLayer />
 				<ArtifactPopover />
 				<ProposalSheet />

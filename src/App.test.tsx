@@ -6,11 +6,11 @@ vi.mock('tldraw', async () => {
 	return { ...actual, Tldraw: () => <div data-testid="tldraw" /> }
 })
 
-import App from './App'
+import { DemoApp } from './App'
 
 describe('App', () => {
 	it('renders the four shell regions', () => {
-		render(<App />)
+		render(<DemoApp />)
 		expect(screen.getByRole('banner')).toBeInTheDocument()
 		expect(screen.getByRole('complementary', { name: 'Sources' })).toBeInTheDocument()
 		expect(screen.getByRole('complementary', { name: 'AI' })).toBeInTheDocument()

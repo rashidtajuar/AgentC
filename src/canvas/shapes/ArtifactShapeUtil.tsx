@@ -50,6 +50,10 @@ export class ArtifactShapeUtil extends BaseBoxShapeUtil<ArtifactShape> {
 		return false
 	}
 
+	override onBeforeDuplicate(_original: ArtifactShape, duplicate: ArtifactShape) {
+		return { ...duplicate, meta: { ...duplicate.meta, boardId: duplicate.id, ghost: false, ghostDot: false } }
+	}
+
 	override onDoubleClick(shape: ArtifactShape) {
 		emit(CC_EVENTS.openArtifact, { boardId: ccMeta(shape).boardId, shapeId: shape.id })
 		// returning a (no-op) change tells tldraw the double-click was handled, so it won't start a text shape
@@ -65,7 +69,7 @@ export class ArtifactShapeUtil extends BaseBoxShapeUtil<ArtifactShape> {
 					<span className="cc-art__tool">{TOOL_NAME[tool] ?? tool}</span>
 					<span className="cc-ext">{ext}</span>
 					<span className="cc-art__dot">
-						<Dot state={dot} size="s" />
+						<Dot state={dot} size="s" label={shape.props.status === 'unverified' ? 'Source link · not read or synced' : undefined} />
 					</span>
 				</div>
 				<div className="cc-art__body">
