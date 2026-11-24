@@ -30,3 +30,6 @@ playwright-report
 .impeccable/questions
 .impeccable/review
 .env
+
+# Xcode user settings
+xcuserdata/

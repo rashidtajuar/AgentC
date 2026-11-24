@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { ArrowUpRight, Plus } from 'lucide-react'
+import { ArrowUpRight, ImagePlus, Plus } from 'lucide-react'
 import type { ArtifactShape } from '../canvas/shapes/types'
 import type { ToolKind } from '../core/types'
 import { SourceIcon } from '../ui/SourceIcon'
@@ -45,15 +45,17 @@ function safeSourceHref(location: string) {
 	try { return sourceUrl(location) } catch { return undefined }
 }
 
-export function ProjectTools({ hidden, brief, canvas }: {
+export function ProjectTools({ hidden, brief, canvas, cloud }: {
 	hidden: boolean
 	brief: string
+	cloud: boolean
 	canvas: ReturnType<typeof useProjectCanvas>
 }) {
 	const { runtime, sources, pending, blocked, error, notice, setError, finish, propose, reload } = canvas
 	const [name, setName] = useState('')
 	const [url, setUrl] = useState('')
 	const [tool, setTool] = useState<ToolKind>('doc')
+	const [addingImages, setAddingImages] = useState(false)
 
 	function addSource(e: FormEvent<HTMLFormElement>) {
 		e.preventDefault()
@@ -84,6 +86,12 @@ export function ProjectTools({ hidden, brief, canvas }: {
 				{error ? (
 					<div className="cc-workspace-error" role="alert">
 						{error}
+						{blocked && canvas.recovery ? (
+							<div className="cc-projects__actions">
+								<button type="button" className="cc-btn cc-btn--shell" onClick={canvas.recovery.retry}>Retry save</button>
+								<button type="button" className="cc-btn cc-btn--shell" onClick={canvas.recovery.download}>Download canvas data</button>
+							</div>
+						) : null}
 						{blocked ? <button type="button" className="cc-btn cc-btn--shell" onClick={reload}>Reload saved version</button> : null}
 					</div>
 				) : null}
@@ -104,6 +112,23 @@ export function ProjectTools({ hidden, brief, canvas }: {
 						</fieldset>
 					</form>
 				</section>
+				<section>
+					<h3>Images</h3>
+					<label className="cc-media-picker cc-btn cc-btn--shell">
+						<ImagePlus size={15} /> {addingImages ? 'Adding images…' : 'Add images'}
+						<input type="file" accept="image/png,image/jpeg,image/gif,image/webp,image/avif,image/bmp" multiple
+							disabled={!runtime || !!pending || blocked || addingImages} onChange={async (event) => {
+								const files = Array.from(event.currentTarget.files ?? [])
+								event.currentTarget.value = ''
+								if (!runtime || !files.length) return
+								setAddingImages(true)
+								setError('')
+								try { await runtime.editor.putExternalContent({ type: 'files', files }) }
+								catch (err) { setError(message(err)) }
+								finally { setAddingImages(false) }
+							}} />
+					</label>
+				</section>
 				<section className="cc-workspace-planner">
 					<h3>Organize sources</h3>
 					<p>Preview a layout grouped by source type.</p>
@@ -119,7 +144,7 @@ export function ProjectTools({ hidden, brief, canvas }: {
 					) : <button type="button" className="cc-btn cc-btn--shell" disabled={!runtime || !sources.length || blocked} onClick={propose}>Propose organization</button>}
 					{notice ? <p className="cc-workspace-hint" aria-live="polite">{notice}</p> : null}
 				</section>
-				<p className="cc-workspace-hint">Saved in this browser. Layout suggestions use a local rule.</p>
+				<p className="cc-workspace-hint">{cloud ? 'Saved to your account.' : 'Saved in this browser.'} Layout suggestions use a local rule.</p>
 			</div>
 		</aside>
 	)

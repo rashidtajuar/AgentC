@@ -86,3 +86,15 @@ Reuse the Vercel Git-linked `agentc` project for `rashidtajuar/AgentC`. `main` i
 ### Replace before showing real clients
 
 All copy, people, files, the repository name, PR #42 and the token values are invented. Swap them in `src/demo/content.ts` and `src/demo/seed.ts`.
+
+### Cloud workspace preview
+
+Create a dedicated Supabase preview project and apply the SQL under `supabase/migrations/`. For the private alpha, disable public sign-ups and create test users in Supabase Auth. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` in `.env.local` or the Vercel Preview environment. Use the publishable key, which the browser can read. Open `/?cloud=1` to sign in. Browser projects can be copied from their original browser session. Images are stored in the private board media bucket and resolved for the signed-in owner.
+
+Cloud autosave checks the last saved revision. On a conflicting save, the board pauses editing and offers to download canvas data before reloading. Cloud canvas data uses project-scoped media references. The downloaded JSON is for recovery and does not bundle binaries. Cloud boards fit to the viewport when opened. Appearance preferences stay on the device. Run the SQL assertions in `supabase/tests/` against a disposable test database.
+
+### iPhone and iPad feasibility app
+
+Start the web app on port 5173 and run the `AgentC` scheme from `native/ios/AgentC.xcodeproj` on an iPhone or iPad simulator. The Debug simulator build opens the local app in WKWebView. Set the `AGENTC_WORKSPACE_URL` Xcode build setting to a trusted HTTPS AgentC workspace for a connected build. Use a URL ending in `/?cloud=1` for the cloud entry flow. External links open in the system browser. With the local web server running, the AgentC scheme also includes a simulator smoke test for board creation, source editing, and reopening.
+
+This is a device validation target for the full editor. Distribution still requires license confirmation, signing, and physical device tests for touch, Pencil, image selection, large boards, and recovery.

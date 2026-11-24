@@ -4,7 +4,7 @@ import '@fontsource-variable/bricolage-grotesque'
 import '@fontsource/young-serif'
 import '../styles/shapes.css'
 import { getAssetUrlsByImport } from '@tldraw/assets/imports.vite'
-import { DefaultStylePanel, Tldraw, useEditor, useValue, type Editor, type TldrawProps, type TLComponents, type TLUiStylePanelProps } from 'tldraw'
+import { DefaultStylePanel, Tldraw, useEditor, useValue, type Editor, type TLAssetStore, type TldrawProps, type TLComponents, type TLUiStylePanelProps } from 'tldraw'
 import { customShapeUtils } from './shapes'
 
 const assetUrls = getAssetUrlsByImport()
@@ -34,9 +34,10 @@ const components: TLComponents = {
 }
 
 
-export function Canvas({ onMount, getShapeVisibility }: {
+export function Canvas({ onMount, getShapeVisibility, assets }: {
 	onMount: (editor: Editor) => void
 	getShapeVisibility?: TldrawProps['getShapeVisibility']
+	assets?: TLAssetStore
 }) {
-	return <Tldraw licenseKey={import.meta.env.VITE_TLDRAW_LICENSE_KEY} shapeUtils={customShapeUtils} assetUrls={assetUrls} components={components} onMount={onMount} getShapeVisibility={getShapeVisibility} />
+	return <Tldraw licenseKey={import.meta.env.VITE_TLDRAW_LICENSE_KEY} shapeUtils={customShapeUtils} assetUrls={assetUrls} assets={assets} components={components} onMount={onMount} getShapeVisibility={getShapeVisibility} />
 }

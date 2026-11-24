@@ -43,7 +43,8 @@ export function Workspace() {
 			<ProjectCanvas key={active.id} project={active} onBack={() => open(null)} />
 		</Suspense>
 	)
-	return <ProjectHome projects={projects} error={error} onOpen={open} onCreate={(name, brief) => {
+	const cloudEnabled = !!(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY)
+	return <ProjectHome actions={cloudEnabled && <a className="cc-btn cc-btn--shell" href="?cloud=1">Cloud workspace</a>} projects={projects} error={error} onOpen={open} onCreate={(name, brief) => {
 		const project = createProject(name, brief)
 		const next = [project, ...readProjects(localStorage)]
 		writeProjects(localStorage, next)
