@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import type { Editor } from 'tldraw'
-import { BEATS } from '../demo/scenario'
+import { BEATS, VOTE_CHIP } from '../demo/scenario'
 import { boardAtBeat, ScriptedPlanner } from '../demo/scriptedPlanner'
 import { seedBoard } from '../demo/seed'
 import { createDemoStore } from '../state/demoStore'
@@ -193,5 +193,83 @@ describe('demo engine on the real canvas', () => {
 		await frames(80)
 		expect(store.getState().beat).toBe(0)
 		expect(store.getState().pending?.id).toBe('prop-organize')
+	})
+
+	it('the Undo button stays only while the accepted step is the newest change', async () => {
+		const { port, store } = demo()
+		await store.getState().send(BEATS[0].chip!)
+		store.getState().accept()
+		await frames(10)
+		const step = store.getState().committed[0].step
+		expect(store.getState().undoable).toBe(step)
+		click('dir-warm') // a selection is not a change
+		await frames(10)
+		expect(store.getState().undoable).toBe(step)
+		await store.getState().send(VOTE_CHIP)
+		await frames(10)
+		expect(port.read().votes['dir-warm']).toEqual(['Maya', 'Jon'])
+		expect(store.getState().undoable).toBeNull()
+		store.getState().undoLast() // must not take the votes with it
+		await frames(10)
+		expect(port.read().votes['dir-warm']).toEqual(['Maya', 'Jon'])
+		expect(store.getState().committed).toHaveLength(1)
+	})
+
+	it('the Undo button never deletes a note the driver added after accepting', async () => {
+		const { port, store } = demo()
+		await store.getState().send(BEATS[0].chip!)
+		store.getState().accept()
+		await frames(10)
+		editor.markHistoryStoppingPoint('creating')
+		editor.createShape({ id: toTlId('my-note'), type: 'note', x: 2000, y: 2000 })
+		await frames(10)
+		expect(store.getState().undoable).toBeNull()
+		store.getState().undoLast()
+		await frames(10)
+		expect(port.exists('my-note')).toBe(true)
+		expect(store.getState().committed).toHaveLength(1)
+	})
+
+	it('redoing an undone approval puts it back in the story, then the links suggestion', async () => {
+		const { port, store } = demo()
+		store.getState().jumpTo(2)
+		await store.getState().approveDirection('dir-warm')
+		await frames(40)
+		expect(store.getState().pending?.id).toBe('prop-links')
+		editor.undo() // the links suggestion
+		await frames(10)
+		editor.undo() // the approval
+		await frames(10)
+		expect(store.getState().beat).toBe(2)
+		expect(port.exists('decision-warm')).toBe(false)
+		editor.redo()
+		await frames(10)
+		expect(port.exists('decision-warm')).toBe(true)
+		expect(store.getState().beat).toBe(2) // approving keeps the beat; accepting the links moves it on
+		expect(store.getState().committed).toHaveLength(1)
+		expect(store.getState().chips).not.toContain('Approve Warm & tactile')
+		editor.redo()
+		await frames(10)
+		expect(store.getState().pending?.id).toBe('prop-links')
+	})
+
+	it('redoing an undone pull request closes the re-offered change', async () => {
+		const { port, store } = demo()
+		store.getState().jumpTo(3)
+		await store.getState().send(BEATS[3].chip!)
+		expect(store.getState().pending?.external).toBe(true)
+		await store.getState().approveExternal()
+		await frames(10)
+		expect(store.getState().beat).toBe(5)
+		editor.undo()
+		await frames(10)
+		expect(port.exists('pr-42')).toBe(false)
+		expect(store.getState().pending?.external).toBe(true)
+		editor.redo()
+		await frames(10)
+		expect(port.exists('pr-42')).toBe(true)
+		expect(store.getState().pending).toBeUndefined()
+		expect(store.getState().beat).toBe(5)
+		expect(store.getState().committed.at(-1)?.proposal?.external).toBe(true)
 	})
 })

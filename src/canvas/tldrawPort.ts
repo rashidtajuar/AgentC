@@ -1,4 +1,4 @@
-import { Box, renderPlaintextFromRichText, type Editor, type TLRichText, type TLShape, type TLShapeId, type TLShapePartial } from 'tldraw'
+import { Box, renderPlaintextFromRichText, type Editor, type RecordsDiff, type TLRecord, type TLRichText, type TLShape, type TLShapeId, type TLShapePartial } from 'tldraw'
 import type { Board, BoardShape, CanvasOp, DotState, Relationship } from '../core/types'
 import { useCanvasUi } from './canvasUi'
 import type { CanvasPort } from './port'
@@ -23,10 +23,20 @@ interface Tween {
 
 export function createTldrawPort(editor: Editor): CanvasPort {
 	let mark: string | null = null
+	let markProposal: string | null = null
 	let raf = 0
 	let tweens: Tween[] = []
 	// a preview the person undid, kept so a redo can hand it back
-	let undone: { mark: string; tweens: Tween[] } | null = null
+	let undone: { mark: string; tweens: Tween[]; proposalId: string } | null = null
+
+	// tldraw's history, read only: entries are diffs and named stops, newest first
+	type HistoryEntry = { type: 'diff'; diff: RecordsDiff<TLRecord> } | { type: 'stop'; id: string }
+	type HistoryStack = { head: HistoryEntry | null; tail: HistoryStack }
+	const history = () =>
+		(editor as unknown as { history: { stacks: { get(): { undos: HistoryStack } }; pendingDiff: { diff: RecordsDiff<TLRecord> } } }).history
+	// a change to the board itself, as opposed to selection, camera or other session state
+	const touchesBoard = (d: RecordsDiff<TLRecord>) =>
+		[d.added, d.updated, d.removed].some((o) => Object.keys(o).some((k) => k.startsWith('shape:') || k.startsWith('binding:')))
 	// tldraw keeps undo stops on its history stack; a stop still there means its step is applied
 	const markOnUndoStack = (id: string) =>
 		(editor as unknown as { getMarkIdMatching(s: string): string | null }).getMarkIdMatching(id) === id
@@ -262,6 +272,7 @@ export function createTldrawPort(editor: Editor): CanvasPort {
 			undone = null
 			if (mark) port.discard()
 			mark = editor.markHistoryStoppingPoint(`proposal:${proposalId}`)
+			markProposal = proposalId
 			applyActions(ops, true)
 		},
 		commit() {
@@ -301,19 +312,37 @@ export function createTldrawPort(editor: Editor): CanvasPort {
 		},
 		previewWasUndone() {
 			if (!mark || markOnUndoStack(mark)) return false
-			undone = { mark, tweens }
+			undone = { mark, tweens, proposalId: markProposal ?? '' }
 			stopTween()
 			mark = null
 			return true
 		},
 		previewWasRedone() {
-			if (!undone || !markOnUndoStack(undone.mark)) return false
+			if (!undone || !markOnUndoStack(undone.mark)) return null
+			const { proposalId } = undone
 			mark = undone.mark
+			markProposal = proposalId
 			tweens = undone.tweens
 			undone = null
 			// cards caught mid-move by the undo land in their slots
 			finishTween()
-			return true
+			return proposalId
+		},
+		isLatestStep(step) {
+			// walk back from the newest entry: the diffs right above the step's stop are its own;
+			// a board change behind any later stop (a vote, a note, a drag) means someone has moved on
+			const h = history()
+			let changedSinceStop = touchesBoard(h.pendingDiff.diff)
+			let laterChange = false
+			for (let top = h.stacks.get().undos; top.head; top = top.tail) {
+				const e = top.head
+				if (e.type === 'stop') {
+					if (e.id === step) return !laterChange
+					if (changedSinceStop) laterChange = true
+					changedSinceStop = false
+				} else if (touchesBoard(e.diff)) changedSinceStop = true
+			}
+			return false
 		},
 		undo() {
 			editor.undo()

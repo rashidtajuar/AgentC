@@ -14,6 +14,7 @@ export function AiPanel() {
 	const busy = useDemo((s) => s.busy, false)
 	const pending = useDemo((s) => s.pending, undefined)
 	const committed = useDemo((s) => s.committed, [])
+	const undoable = useDemo((s) => s.undoable, null)
 	const listRef = useRef<HTMLDivElement>(null)
 
 	// stay pinned to the newest message while replies stream in
@@ -63,7 +64,7 @@ export function AiPanel() {
 							m={m}
 							proposal={latestForProposal && pending?.id === m.proposalId ? pending : undefined}
 							accepted={latestForProposal && committed.some((c) => c.proposal?.id === m.proposalId)}
-							canUndo={latestForProposal && lastCommitted?.proposal?.id === m.proposalId && !pending}
+							canUndo={latestForProposal && lastCommitted?.proposal?.id === m.proposalId && !pending && undoable === lastCommitted?.step}
 						/>
 					)
 				})}

@@ -19,7 +19,9 @@ export class FakePort implements CanvasPort {
 	private notify() {
 		setTimeout(() => this.listeners.forEach((l) => l()), 0)
 	}
+	private editedByHand = false
 	private push(kind: string) {
+		this.editedByHand = false
 		const step = `[${kind}]_${++this.seq}`
 		this.history.push({ step, before: this.board })
 		return step
@@ -74,7 +76,10 @@ export class FakePort implements CanvasPort {
 		return true
 	}
 	previewWasRedone() {
-		return false // the fake keeps no redo stack
+		return null // the fake keeps no redo stack
+	}
+	isLatestStep(step: StepId) {
+		return !this.editedByHand && this.history.at(-1)?.step === step
 	}
 	undo() {
 		const last = this.history.pop()
@@ -104,6 +109,7 @@ export class FakePort implements CanvasPort {
 	}
 	/** A person deleting shapes by hand: not an undo. */
 	deleteShapes(ids: string[]) {
+		this.editedByHand = true
 		this.board = {
 			...this.board,
 			shapes: this.board.shapes.filter((s) => !ids.includes(s.id)),

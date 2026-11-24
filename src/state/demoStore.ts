@@ -45,6 +45,8 @@ export interface DemoState {
 	presence: Record<string, string>
 	popover: { boardId: string } | null
 	committed: Committed[]
+	/** the last committed step while nothing on the board has changed since it; the AI panel's Undo button acts only on this */
+	undoable: StepId | null
 
 	init(): void
 	send(prompt: string): Promise<void>
@@ -133,11 +135,13 @@ export function createDemoStore({ planner, port, delay }: DemoDeps): DemoStore {
 			return id
 		}
 
-		// the suggestion a Cmd+Z took off the board, so a redo can put it back with Accept and Discard
-		let undonePreview: ActionProposal | null = null
+		/** every suggestion offered, by id, so a redo can put the right one back with Accept and Discard */
+		const proposals = new Map<string, ActionProposal>()
+		/** steps an undo took out of the story, oldest first, so a redo can put them back */
+		let rewound: { entry: Committed; beatAfter: BeatId }[] = []
 
 		function offer(p: ActionProposal) {
-			undonePreview = null
+			proposals.set(p.id, p)
 			set({ pending: p, chips: [], run: undefined })
 			if (p.external) return
 			port.preview(p.ops, p.id)
@@ -148,7 +152,6 @@ export function createDemoStore({ planner, port, delay }: DemoDeps): DemoStore {
 
 		/** Drop a waiting canvas preview without the busy guard (internal use). */
 		function dropPending() {
-			undonePreview = null
 			const p = get().pending
 			if (!p) return
 			if (!p.external) port.discard()
@@ -170,31 +173,66 @@ export function createDemoStore({ planner, port, delay }: DemoDeps): DemoStore {
 
 		function reset(beat: BeatId) {
 			abortInFlight()
-			undonePreview = null
+			rewound = []
+			proposals.clear()
 			port.highlight(null)
-			set({ beat, pending: undefined, sheetOpen: false, run: undefined, toasts: [], popover: null, committed: [] })
+			set({ beat, pending: undefined, sheetOpen: false, run: undefined, toasts: [], popover: null, committed: [], undoable: null })
 		}
 
-		/** React to the canvas changing under us: only real undos rewind the story. */
+		function refreshUndoable() {
+			const last = get().committed.at(-1)
+			set({ undoable: last && port.isLatestStep(last.step) ? last.step : null })
+		}
+
+		/** A redo brought back steps an undo had taken out: put them back in the story. */
+		function restoreRedoneSteps() {
+			let back: (typeof rewound)[number] | undefined
+			while (rewound.length && port.isStepActive(rewound[0].entry.step)) {
+				const entry = rewound[0].entry
+				back = rewound.shift()
+				set((s) => ({ committed: [...s.committed, entry] }))
+			}
+			if (!back) return false
+			abortInFlight()
+			// the suggestion offered again after the undo is the step that just came back
+			const p = get().pending
+			if (p && get().committed.some((c) => c.proposal?.id === p.id)) {
+				if (!p.external) port.discard()
+				set({ pending: undefined, sheetOpen: false })
+			}
+			set({ beat: back.beatAfter, run: undefined })
+			set({ chips: chips() })
+			return true
+		}
+
+		/** React to the canvas changing under us: only real undos and redos move the story. */
 		function onBoardChange() {
 			if (port.previewWasUndone()) {
 				abortInFlight()
-				undonePreview = get().pending ?? null
 				set({ pending: undefined })
 				set({ chips: chips() })
-			} else if (undonePreview && port.previewWasRedone()) {
-				abortInFlight()
-				set({ pending: undonePreview, chips: [], run: undefined })
-				undonePreview = null
+			} else {
+				const redone = port.previewWasRedone()
+				if (redone) {
+					abortInFlight()
+					const p = proposals.get(redone)
+					if (p) set({ pending: p, chips: [], run: undefined, sheetOpen: false })
+					else port.discard()
+				}
 			}
+			if (restoreRedoneSteps()) return refreshUndoable()
 			const { committed } = get()
 			let keep = committed.length
 			while (keep > 0 && !port.isStepActive(committed[keep - 1].step)) keep--
-			if (keep === committed.length) return
-			const first = committed[keep]
+			if (keep === committed.length) return refreshUndoable()
+			const popped = committed.slice(keep)
+			const beatNow = get().beat
+			rewound = [...popped.map((entry, i) => ({ entry, beatAfter: popped[i + 1]?.beatBefore ?? beatNow })), ...rewound]
+			const first = popped[0]
 			abortInFlight()
 			dropPending()
 			set({ committed: committed.slice(0, keep), beat: first.beatBefore, run: undefined })
+			refreshUndoable()
 			later(0, () => {
 				if (first.proposal) {
 					addMessage({ role: 'ai', text: 'Undone. The suggestion is back if you want it.', proposalId: first.proposal.id })
@@ -283,6 +321,7 @@ export function createDemoStore({ planner, port, delay }: DemoDeps): DemoStore {
 			presence: {},
 			popover: null,
 			committed: [],
+			undoable: null,
 
 			init() {
 				unlisten?.()
@@ -322,8 +361,9 @@ export function createDemoStore({ planner, port, delay }: DemoDeps): DemoStore {
 			undoLast() {
 				if (get().busy) return
 				const last = get().committed.at(-1)
-				if (!last) return port.undo()
-				// clicks after accepting leave small history entries on top: step back until this step is gone
+				// only while nothing on the board has changed since: never take votes or the driver's own work with it
+				if (!last || !port.isLatestStep(last.step)) return
+				// clicks after accepting leave selection entries on top: step back until this step is gone
 				for (let i = 0; i < 25 && port.isStepActive(last.step); i++) port.undo()
 			},
 
