@@ -87,8 +87,12 @@ test('the sample opens canvas-first and keeps chat available on mobile', async (
 	const canvas = page.getByRole('main', { name: 'Canvas' })
 	await expect(canvas).toBeVisible()
 	await expect(page.getByRole('complementary')).toHaveCount(0)
-	const initial = (await canvas.boundingBox())!.height
-	await page.getByRole('button', { name: 'Assistant', exact: true }).click()
+	const canvasBounds = (await canvas.boundingBox())!
+	const initial = canvasBounds.height
+	const dock = page.getByRole('group', { name: 'Sample canvas controls' })
+	expect((await dock.boundingBox())!.y).toBeGreaterThanOrEqual(canvasBounds.y + initial)
+	await expect(page.getByRole('banner').getByRole('link', { name: 'Your projects' })).toBeVisible()
+	await dock.getByRole('button', { name: 'Assistant', exact: true }).click()
 	await expect(page.getByRole('complementary', { name: 'AI' })).toBeVisible()
 	const compact = (await canvas.boundingBox())!.height
 	await page.getByRole('button', { name: 'Expand Assistant' }).click()

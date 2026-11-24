@@ -15,7 +15,7 @@ import { ProposalSheet } from './ui/ProposalSheet'
 import { PresenceLayer } from './ui/PresenceLayer'
 import { SourcesRail } from './ui/SourcesRail'
 import { Toasts } from './ui/Toasts'
-import { TopBar } from './ui/TopBar'
+import { DemoReviewButton, TopBar } from './ui/TopBar'
 import { PanelSizeControls } from './workspace/PanelSizeControls'
 import './styles/demoMobile.css'
 
@@ -65,10 +65,7 @@ export default function DemoApp() {
 	return (
 		<DemoProvider value={demo}>
 		<div className="cc-app cc-sample-app" data-dock={dock ?? 'closed'} data-expanded={expanded}>
-			<TopBar mobileActions={<>
-				<button type="button" className="cc-btn cc-btn--shell" aria-expanded={dock === 'sources'} aria-controls="sample-sources" onClick={() => toggle('sources')}><Layers size={17} /> Sources</button>
-				<button type="button" className="cc-btn cc-btn--shell" aria-expanded={dock === 'assistant'} aria-controls="sample-assistant" onClick={() => toggle('assistant')}><BotMessageSquare size={17} /> Assistant</button>
-			</>} />
+			<TopBar />
 			<SourcesRail controls={<PanelSizeControls expanded={expanded} onResize={() => setExpanded(!expanded)} onClose={() => toggle('sources')} name="Sources" />} />
 			<main className="cc-canvas" aria-label="Canvas">
 				<Canvas onMount={onMount} />
@@ -78,6 +75,11 @@ export default function DemoApp() {
 				<Toasts />
 			</main>
 			<AiPanel controls={<PanelSizeControls expanded={expanded} onResize={() => setExpanded(!expanded)} onClose={() => toggle('assistant')} name="Assistant" />} />
+			<div className="cc-mobile-dock cc-demo-dock" role="group" aria-label="Sample canvas controls">
+				<button type="button" className="cc-board-icon cc-demo-dock-button" aria-expanded={dock === 'sources'} aria-controls="sample-sources" onClick={() => toggle('sources')}><Layers size={18} /><span>Sources</span></button>
+				<button type="button" className="cc-board-icon cc-demo-dock-button" aria-expanded={dock === 'assistant'} aria-controls="sample-assistant" onClick={() => toggle('assistant')}><BotMessageSquare size={18} /><span>Assistant</span></button>
+				<DemoReviewButton compact />
+			</div>
 		</div>
 		</DemoProvider>
 	)
