@@ -1,0 +1,33 @@
+.cc-sample-app .cc-panel-size, .cc-demo-mobile-actions { display: none; }
+.cc-sample-app .cc-ai .cc-panel-title { display: flex; align-items: center; gap: 8px; }
+.cc-sample-app .cc-sources { display: flex; }
+.cc-demo-review { gap: 4px; }
+
+@media (max-width: 900px), (hover: none) and (pointer: coarse) {
+	.cc-sample-app {
+		--cc-sample-dock: 0px;
+		grid-template-areas: 'top' 'canvas' 'ai';
+		grid-template-columns: minmax(0, 1fr);
+		grid-template-rows: auto minmax(0, 1fr) var(--cc-sample-dock);
+	}
+	.cc-sample-app[data-dock='sources'], .cc-sample-app[data-dock='assistant'] { --cc-sample-dock: min(44dvh, 420px); }
+	.cc-sample-app[data-expanded='true'] { --cc-sample-dock: min(64dvh, 600px); }
+	.cc-sample-app .cc-sources, .cc-sample-app .cc-ai { display: none; grid-area: ai; border: 0; border-top: 1px solid var(--cc-graphite-600); }
+	.cc-sample-app[data-dock='sources'] .cc-sources, .cc-sample-app[data-dock='assistant'] .cc-ai { display: flex; }
+	.cc-sample-app .cc-panel-head { position: relative; padding-right: 108px; min-height: 52px; }
+	.cc-sample-app .cc-panel-size { position: absolute; right: 8px; top: 4px; display: flex; }
+	.cc-sample-app .cc-panel-size button { min-width: 44px; min-height: 44px; }
+	.cc-sample-app .cc-topbar { flex-wrap: wrap; padding: 4px 8px 6px; gap: 4px 8px; position: relative; z-index: 401; }
+	.cc-sample-app .cc-topbar__sep, .cc-sample-app .cc-crumbs, .cc-sample-app .cc-faces, .cc-sample-app .cc-brand__name { display: none; }
+	.cc-sample-app .cc-topbar__right { gap: 4px; }
+	.cc-sample-app .cc-topbar__right .cc-btn, .cc-demo-mobile-actions .cc-btn { min-height: 44px; padding-inline: 8px; font-size: 12px; }
+	.cc-sample-app .cc-demo-review__word { display: none; }
+	.cc-demo-mobile-actions { width: 100%; display: flex; gap: 8px; }
+	.cc-demo-mobile-actions .cc-btn[aria-expanded='true'] { background: var(--cc-graphite-700); }
+	.cc-sample-app .cc-src-item { min-height: 44px; }
+	.cc-sample-app .cc-ai__foot { padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+}
+
+@media (901px <= width <= 1100px) and (hover: hover) {
+	.cc-sample-app { grid-template-columns: 200px minmax(0, 1fr) 300px; }
+}

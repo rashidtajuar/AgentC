@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Check, CornerDownRight, LoaderCircle, Undo2 } from 'lucide-react'
+import { BotMessageSquare, Check, CornerDownRight, LoaderCircle, Undo2 } from 'lucide-react'
 import type { ActionProposal } from '../core/types'
 import type { ChatMessage } from '../state/demoStore'
 import { useDemo, useDemoCtx } from '../state/DemoContext'
@@ -7,7 +7,7 @@ import { Composer } from './Composer'
 import { Dot } from './Dot'
 import { CLEAR_HIGHLIGHT_CHIP } from '../demo/scenario'
 
-export function AiPanel() {
+export function AiPanel({ controls }: { controls?: React.ReactNode }) {
 	const ctx = useDemoCtx()
 	const messages = useDemo((s) => s.messages, [])
 	const chips = useDemo((s) => s.chips, [])
@@ -48,9 +48,9 @@ export function AiPanel() {
 	}
 
 	return (
-		<aside className="cc-ai" aria-label="AI">
+		<aside className="cc-ai" id="sample-assistant" aria-label="AI">
 			<div className="cc-panel-head">
-				<h2 className="cc-panel-title">Assistant</h2>
+				<h2 className="cc-panel-title"><BotMessageSquare size={17} aria-hidden="true" /> Assistant</h2>{controls}
 				<span className="cc-ai__scope">Sees this board · asks before changing anything</span>
 			</div>
 			<div className="cc-ai__list" ref={listRef} aria-live="polite">

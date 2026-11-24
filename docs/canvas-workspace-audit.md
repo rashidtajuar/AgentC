@@ -12,3 +12,17 @@ The audit covered the project entry, saved canvas, and sample workflow. The aim 
 | Initial download | The original home page loaded 658.56 kB gzip of JavaScript in its entry bundle. | The home page now loads about 74 kB gzip of JavaScript. The canvas SDK still accounts for most editor-route JavaScript and is loaded on demand. |
 
 The sample stays on its own route and continues to use the original document and scripted workflow. Sources in a saved board are links. Browser storage remains single-device and has a quota, particularly for embedded image data. The current tldraw evaluation license must be replaced before it expires. The audit did not include a formal assistive technology conformance evaluation or field performance measurements.
+
+
+## Mobile and discovery follow-up
+
+| Area | Finding | Change |
+| --- | --- | --- |
+| Canvas space | The scripted sample and saved workspace opened with secondary panels taking up part of the touch viewport. | Start both canvases with panels closed on compact and touch layouts. Expose one resizable dock at a time. |
+| Finding content | The Sources list could only locate source cards. | Add an ordered, searchable Layers list for all current-page elements. Selecting a layer brings it into view; edits to lock state are undoable. |
+| Hierarchy and accessibility | Small panel buttons and unlabeled icon clusters made controls harder to discover on touch. | Group the three workspace tools and add short captions, 44px touch targets, named panel controls, and focus recovery for the optional guide. |
+| Feedback | Cloud queries showed plain text and a false empty state while fetching. | Add shared skeletons for editor and account startup, and static list placeholders for cloud projects. |
+| Assistant | The saved workspace mixed file entry and a layout proposal in the same scrolling panel. | Separate Add and Assistant, explain the local suggestion rule, and exclude locked sources from layout proposals. |
+| Performance | A flat element list can rerender for every canvas movement. | Subscribe only when Layers is open and reuse equal layer-list entries while positions change. Keep the tldraw editor separate from the initial project route. |
+
+The hosted preview verifies owner isolation and revision guards. Public sign-up is disabled for the preview database. A live model and external tool execution stay in the product roadmap. The existing large editor chunk remains a release performance item.

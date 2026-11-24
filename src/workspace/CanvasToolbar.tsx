@@ -1,32 +1,23 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { Blend, LayoutGrid, Link2, Maximize, Minimize, Network, PanelLeft, PanelRight } from 'lucide-react'
+import { Blend, BotMessageSquare, LayoutGrid, Layers, Link2, Maximize, Minimize, Network, Plus } from 'lucide-react'
 import { BOARD_COLORS, type BoardView } from './boardView'
 
 interface Props {
 	view: BoardView
 	onView: (view: BoardView) => void
-	sourcesOpen: boolean
+	leftPanel: 'layers' | 'sources' | null
 	toolsOpen: boolean
-	onSources: () => void
+	onLayers: () => void
+	assistantOpen: boolean
+	onAssistant: () => void
 	onTools: () => void
 	onFocus: () => void
 	canConnect: boolean
 	onConnect: () => void
 }
 
-export function CanvasToolbar({ view, onView, sourcesOpen, toolsOpen, onSources, onTools, onFocus, canConnect, onConnect }: Props) {
-	const [appearanceOpen, setAppearanceOpen] = useState(false)
-	const anchor = useRef<HTMLDivElement>(null)
-	useEffect(() => {
-		if (!appearanceOpen) return
-		const close = (e: PointerEvent) => {
-			if (e.target instanceof Node && !anchor.current?.contains(e.target)) setAppearanceOpen(false)
-		}
-		document.addEventListener('pointerdown', close)
-		return () => document.removeEventListener('pointerdown', close)
-	}, [appearanceOpen])
-
-	const focused = !sourcesOpen && !toolsOpen
+export function CanvasToolbar({ view, onView, leftPanel, toolsOpen, assistantOpen, onLayers, onTools, onAssistant, onFocus, canConnect, onConnect }: Props) {
+	const focused = !leftPanel && !toolsOpen && !assistantOpen
 	const FocusIcon = focused ? Minimize : Maximize
 
 	return (
@@ -41,55 +32,73 @@ export function CanvasToolbar({ view, onView, sourcesOpen, toolsOpen, onSources,
 			</div>
 			<div className="cc-board-actions" role="group" aria-label="Canvas layout">
 				{view.mode === 'map' ? (
-					<button type="button" className="cc-board-icon" aria-label="Connect selected items"
+					<button type="button" className="cc-board-icon cc-board-connect" aria-label="Connect selected items"
 						title="Connect selected items · Shift-click two items" disabled={!canConnect} onClick={onConnect}>
 						<Link2 size={17} />
 					</button>
 				) : null}
-				<div className="cc-appearance-anchor" ref={anchor}>
-					<button type="button" className="cc-board-icon" title="Canvas appearance" aria-label="Canvas appearance"
-						aria-expanded={appearanceOpen} aria-controls="canvas-appearance" onClick={() => setAppearanceOpen((open) => !open)}>
-						<Blend size={16} />
-					</button>
-					{appearanceOpen ? (
-						<fieldset className="cc-appearance" id="canvas-appearance" onKeyDown={(e) => {
-							if (e.key === 'Escape') {
-								e.currentTarget.parentElement?.querySelector('button')?.focus()
-								setAppearanceOpen(false)
-							}
-						}}>
-							<legend>Canvas appearance</legend>
-							<span className="cc-appearance__label">Background</span>
-							<div className="cc-swatches" role="group" aria-label="Background color">
-								{Object.entries(BOARD_COLORS).map(([id, color]) => (
-									<button key={id} type="button" aria-label={color.label} title={color.label}
-										style={{ background: color.value }} aria-pressed={view.color === id}
-										onClick={() => onView({ ...view, color: id as BoardView['color'] })} />
-								))}
-							</div>
-							<label className="cc-appearance__pattern">
-								<input type="checkbox" checked={view.dotted} onChange={(e) => onView({ ...view, dotted: e.target.checked })} /> Dotted grid
-							</label>
-						</fieldset>
-					) : null}
-				</div>
-				<PanelToggle label="Sources" id="project-sources" open={sourcesOpen} onClick={onSources}><PanelLeft size={16} /></PanelToggle>
-				<PanelToggle label="Project tools" id="project-tools" open={toolsOpen} onClick={onTools}><PanelRight size={16} /></PanelToggle>
-				<button type="button" className="cc-board-icon" aria-label={focused ? 'Restore panels' : 'Focus canvas'}
+				<PanelToggle label="Layers" id="project-layers" open={leftPanel === 'layers'} onClick={onLayers} caption="Layers"><Layers size={18} /></PanelToggle>
+				<PanelToggle label="Project tools" id="project-tools" open={toolsOpen} onClick={onTools} caption="Add"><Plus size={19} /></PanelToggle>
+				<PanelToggle label="Assistant" id="project-tools" open={assistantOpen} onClick={onAssistant} caption="Assist"><BotMessageSquare size={18} /></PanelToggle>
+				<button type="button" className="cc-board-icon cc-board-focus" aria-label={focused ? 'Restore panels' : 'Focus canvas'}
 					title={focused ? 'Restore panels' : 'Focus canvas'} onClick={onFocus}><FocusIcon size={16} /></button>
 			</div>
 		</div>
 	)
 }
 
-function PanelToggle({ label, id, open, onClick, children }: {
+export function CanvasAppearance({ view, onView }: Pick<Props, 'view' | 'onView'>) {
+	const [appearanceOpen, setAppearanceOpen] = useState(false)
+	const anchor = useRef<HTMLDivElement>(null)
+	useEffect(() => {
+		if (!appearanceOpen) return
+		const close = (e: PointerEvent) => {
+			if (e.target instanceof Node && !anchor.current?.contains(e.target)) setAppearanceOpen(false)
+		}
+		document.addEventListener('pointerdown', close)
+		return () => document.removeEventListener('pointerdown', close)
+	}, [appearanceOpen])
+
+	return (
+		<div className="cc-appearance-anchor" ref={anchor}>
+			<button type="button" className="cc-board-icon" title="Canvas appearance" aria-label="Canvas appearance"
+				aria-expanded={appearanceOpen} aria-controls="canvas-appearance" onClick={() => setAppearanceOpen((open) => !open)}>
+				<Blend size={16} />
+			</button>
+			{appearanceOpen ? (
+				<fieldset className="cc-appearance" id="canvas-appearance" onKeyDown={(e) => {
+					if (e.key === 'Escape') {
+						e.currentTarget.parentElement?.querySelector('button')?.focus()
+						setAppearanceOpen(false)
+					}
+				}}>
+					<legend>Canvas appearance</legend>
+					<span className="cc-appearance__label">Background</span>
+					<div className="cc-swatches" role="group" aria-label="Background color">
+						{Object.entries(BOARD_COLORS).map(([id, color]) => (
+							<button key={id} type="button" aria-label={color.label} title={color.label}
+								style={{ background: color.value }} aria-pressed={view.color === id}
+								onClick={() => onView({ ...view, color: id as BoardView['color'] })} />
+						))}
+					</div>
+					<label className="cc-appearance__pattern">
+						<input type="checkbox" checked={view.dotted} onChange={(e) => onView({ ...view, dotted: e.target.checked })} /> Dotted grid
+					</label>
+				</fieldset>
+			) : null}
+		</div>
+	)
+}
+
+function PanelToggle({ label, id, open, onClick, children, caption }: {
 	label: string
 	id: string
 	open: boolean
 	onClick: () => void
 	children: ReactNode
+	caption: string
 }) {
 	const action = `${open ? 'Hide' : 'Show'} ${label}`
-	return <button type="button" className="cc-board-icon" data-open={open} title={action} aria-label={action}
-		aria-expanded={open} aria-controls={id} onClick={onClick}>{children}</button>
+	return <button type="button" className="cc-board-icon cc-panel-toggle" data-open={open} title={action} aria-label={action}
+		aria-expanded={open} aria-controls={id} onClick={onClick}>{children}<span aria-hidden="true">{caption}</span></button>
 }

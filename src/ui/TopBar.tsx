@@ -5,7 +5,7 @@ import { PEOPLE, PROJECT } from '../demo/content'
 import { BEATS } from '../demo/scenario'
 import { useDemo, useDemoCtx } from '../state/DemoContext'
 
-export function TopBar() {
+export function TopBar({ mobileActions }: { mobileActions?: React.ReactNode }) {
 	const ctx = useDemoCtx()
 	const pending = useDemo((s) => s.pending, undefined)
 	const count = pending ? 1 : 0
@@ -48,13 +48,14 @@ export function TopBar() {
 						</span>
 					))}
 				</div>
-				<button type="button" className="cc-btn cc-btn--shell" onClick={review} disabled={count === 0} data-active={count > 0 || undefined}>
+				<button type="button" className="cc-btn cc-btn--shell cc-demo-review" aria-label={`Review changes (${count})`} onClick={review} disabled={count === 0} data-active={count > 0 || undefined}>
 					{count > 0 ? <span className="cc-review-dot" aria-hidden="true" /> : null}
-					Review changes ({count})
+					Review<span className="cc-demo-review__word"> changes</span> ({count})
 				</button>
 				<a className="cc-btn cc-btn--ghost" href="/">Your projects</a>
 				<DemoMenu />
 			</div>
+			{mobileActions && <div className="cc-demo-mobile-actions">{mobileActions}</div>}
 		</header>
 	)
 }

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { getSnapshot, loadSnapshot, type Editor } from 'tldraw'
 import { CC_EVENTS } from '../canvas/canvasUi'
-import { SHAPE, type ArtifactShape } from '../canvas/shapes/types'
+import { ccMeta, SHAPE, type ArtifactShape } from '../canvas/shapes/types'
 import { createTldrawPort } from '../canvas/tldrawPort'
 import type { ActionProposal } from '../core/types'
 import { message } from './message'
@@ -177,11 +177,15 @@ export function useProjectCanvas(projectId: string, cloud?: CanvasStorage) {
 	async function propose() {
 		if (!runtime || blocked || pendingRef.current || !(await flushRef.current()) || pendingRef.current) return
 		try {
-			const proposal = planOrganization(runtime.port.read())
+			const movable = sources.filter((source) => !runtime.editor.isShapeOrAncestorLocked(source.id))
+			if (!movable.length) throw new Error('Unlock a source to include it in a layout proposal.')
+			const movableIds = new Set(movable.map((source) => ccMeta(source).boardId ?? source.id))
+			const board = runtime.port.read()
+			const proposal = planOrganization({ ...board, shapes: board.shapes.filter((shape) => movableIds.has(shape.id)) })
 			pendingRef.current = proposal
 			runtime.port.preview(proposal.ops, proposal.id)
 			runtime.editor.updateInstanceState({ isReadonly: true })
-			runtime.port.focus(sources.map((s) => s.id))
+			runtime.port.focus(movable.map((source) => source.id))
 			setPending(proposal)
 			setNotice('')
 		} catch (err) {
