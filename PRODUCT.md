@@ -8,7 +8,7 @@ web
 
 ## Stack
 
-React + TypeScript, with the tldraw SDK as the canvas engine (chosen by Rashid). Code lives in a GitHub repo so the demo can be reused in the real product. Desktop (Tauri) is planned for the real product, not the demo.
+React + TypeScript, with the tldraw SDK as the canvas engine (chosen by Rashid). Code lives in a GitHub repo so the demo can be reused in the real product. Tauri is planned for macOS. The first iOS release requires full canvas editing on iPhone and iPad. The SwiftUI validation app runs the shared canvas in WebKit.
 
 License note: tldraw needs a license key in production. A free hobby key (watermarked) covers the prototype; the commercial product will need a paid commercial license.
 

@@ -64,3 +64,15 @@
 	.cc-workspace .cc-topbar__right { flex-shrink: 0; }
 	.cc-workspace .cc-workspace-panel { gap: 20px; }
 }
+
+.cc-projects__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.cc-projects__header .cc-projects__actions { justify-content: flex-end; }
+.cc-cloud-entry { max-width: 380px; }
+.cc-projects__imports { padding: 24px 0; border-top: 1px solid var(--cc-shell-line); }
+.cc-projects__imports h2 { margin-bottom: 6px; }
+.cc-projects__imports p { font-size: 13px; color: var(--cc-shell-muted); }
+.cc-projects__imports ul { padding: 0; list-style: none; display: flex; gap: 8px; flex-wrap: wrap; }
+.cc-workspace .cc-media-picker { position: relative; display: inline-flex; cursor: pointer; }
+.cc-workspace .cc-media-picker input { position: absolute; inset: 0; opacity: 0; cursor: inherit; padding: 0; margin: 0; }
+.cc-media-picker:focus-within { outline: 2px solid var(--cc-dot-cobalt); outline-offset: 2px; }
+.cc-media-picker:has(input:disabled) { opacity: .5; cursor: default; }

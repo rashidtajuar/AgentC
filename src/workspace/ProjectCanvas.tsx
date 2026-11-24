@@ -1,18 +1,23 @@
 import { useCallback, useRef, useState, type CSSProperties } from 'react'
 import { ArrowLeft, Network } from 'lucide-react'
-import { atom, useValue, type Editor, type TLShape, type TldrawProps } from 'tldraw'
+import { atom, useValue, type Editor, type TLShape, type TLAssetStore, type TldrawProps } from 'tldraw'
 import { Canvas } from '../canvas/Canvas'
 import { CanvasToolbar } from './CanvasToolbar'
 import { BOARD_COLORS, hasConnection, isConnection, readView, viewKey, type BoardView } from './boardView'
 import { ProjectTools, SourcesPanel } from './ProjectPanels'
-import { useProjectCanvas } from './useProjectCanvas'
+import { useProjectCanvas, type CanvasStorage } from './useProjectCanvas'
 import type { Project } from './model'
 import './projectCanvas.css'
 
 const narrow = () => matchMedia('(max-width: 900px)').matches
 
-export default function ProjectCanvas({ project, onBack }: { project: Project; onBack: () => void }) {
-	const canvas = useProjectCanvas(project.id)
+export default function ProjectCanvas({ project, onBack, storage, assets }: {
+	project: Project
+	onBack: () => void
+	storage?: CanvasStorage
+	assets?: TLAssetStore
+}) {
+	const canvas = useProjectCanvas(project.id, storage)
 	const { runtime, blocked, pending } = canvas
 	const [view, setView] = useState(() => readView(project.id))
 	const [mode] = useState(() => atom('project canvas view', view.mode))
@@ -73,7 +78,7 @@ export default function ProjectCanvas({ project, onBack }: { project: Project; o
 		<div className="cc-app cc-workspace" data-sources={panels.sources} data-tools={panels.tools}>
 			<header className="cc-topbar cc-projectbar">
 				<div className="cc-projectbar__identity">
-					<button type="button" className="cc-btn cc-btn--ghost" onClick={() => { if (canvas.flush()) onBack() }}>
+					<button type="button" className="cc-btn cc-btn--ghost" onClick={async () => { if (await canvas.flush()) onBack() }}>
 						<ArrowLeft size={15} /> Projects
 					</button>
 					<strong className="cc-workspace-title" title={project.name}>{project.name}</strong>
@@ -86,11 +91,11 @@ export default function ProjectCanvas({ project, onBack }: { project: Project; o
 			<SourcesPanel hidden={!panels.sources} sources={canvas.sources} onFocus={(id) => runtime?.port.focus([id])} />
 			<main className="cc-canvas cc-project-canvas" aria-label="Canvas" data-view={view.mode}
 				data-dotted={view.dotted} style={boardStyle}>
-				<Canvas onMount={canvas.onMount} getShapeVisibility={getShapeVisibility} />
+				<Canvas onMount={canvas.onMount} getShapeVisibility={getShapeVisibility} assets={assets} />
 				{!count && runtime ? (
 					<div className="cc-workspace-empty">
 						<h2>Room to think.</h2>
-						<p>Pin a source, drop an image, or draw on the canvas.</p>
+						<p>Pin a source, add an image, or draw on the canvas.</p>
 					</div>
 				) : null}
 				{view.mode === 'map' && count > 0 && !pending ? (
@@ -107,7 +112,7 @@ export default function ProjectCanvas({ project, onBack }: { project: Project; o
 				) : null}
 				<span className="cc-sr" aria-live="polite">{connectionNotice}</span>
 			</main>
-			<ProjectTools hidden={!panels.tools} brief={project.brief} canvas={canvas} />
+			<ProjectTools hidden={!panels.tools} brief={project.brief} canvas={canvas} cloud={!!storage} />
 		</div>
 	)
 }

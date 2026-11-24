@@ -7,12 +7,15 @@ export const documentKey = (id: string) => `agentc:document:${id}`
 
 const object = (value: unknown): value is Record<string, unknown> => !!value && typeof value === 'object' && !Array.isArray(value)
 
+export function canvasDocument(value: unknown): value is { schema: Record<string, unknown>; store: Record<string, unknown> } {
+	if (!object(value) || !object(value.schema) || typeof value.schema.schemaVersion !== 'number' || !object(value.store)) return false
+	const records = Object.values(value.store)
+	return records.some((r) => object(r) && r.typeName === 'document') && records.some((r) => object(r) && r.typeName === 'page')
+}
+
 function isCanvasSnapshot(value: unknown): boolean {
-	if (!object(value) || !object(value.document) || !object(value.session)) return false
-	const { document, session } = value
-	if (!object(document.schema) || typeof document.schema.schemaVersion !== 'number' || !object(document.store)) return false
-	const records = Object.values(document.store)
-	if (!records.some((r) => object(r) && r.typeName === 'document') || !records.some((r) => object(r) && r.typeName === 'page')) return false
+	if (!object(value) || !canvasDocument(value.document) || !object(value.session)) return false
+	const { session } = value
 	return session.version === 0 && typeof session.currentPageId === 'string' && Array.isArray(session.pageStates)
 }
 
