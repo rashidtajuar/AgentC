@@ -25,6 +25,9 @@ final class CanvasSmokeTests: XCTestCase {
         sourceURL.tap()
         sourceURL.typeText("https://example.com/reference\n")
 
+        let viewPicker = web.buttons["Canvas view: Moodboard"]
+        XCTAssertTrue(viewPicker.waitForExistence(timeout: 10))
+        viewPicker.tap()
         let nodeMap = web.descendants(matching: .any)["Node map"].firstMatch
         XCTAssertTrue(nodeMap.waitForExistence(timeout: 10))
         nodeMap.tap()

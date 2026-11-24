@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties } from 're
 import { ArrowLeft, CircleHelp, Network, X } from 'lucide-react'
 import { atom, useValue, type Editor, type TLShape, type TLAssetStore, type TldrawProps } from 'tldraw'
 import { Canvas } from '../canvas/Canvas'
-import { CanvasAppearance, CanvasToolbar } from './CanvasToolbar'
+import { CanvasAppearance, CanvasOptions, CanvasToolbar } from './CanvasToolbar'
 import { BOARD_COLORS, hasConnection, isConnection, readView, viewKey, type BoardView } from './boardView'
 import { PanelSizeControls } from './PanelSizeControls'
 import { ProjectTools, SourceList } from './ProjectPanels'
@@ -123,6 +123,11 @@ export default function ProjectCanvas({ project, onBack, storage, assets }: {
 	}
 
 	const boardStyle = { '--cc-board-surface': BOARD_COLORS[view.color].value } as CSSProperties
+	const saveStatus = <span role="status" aria-label="Save status" className="cc-workspace-save">{canvas.saveStatus}</span>
+	const toolbar = <CanvasToolbar compact={compact} view={view} onView={changeView} leftPanel={panels.left ? leftTab : null}
+		toolsOpen={panels.right === 'add'} assistantOpen={panels.right === 'assistant'} onLayers={toggleLayers}
+		onTools={() => toggleRight('add')} onAssistant={() => toggleRight('assistant')} onFocus={toggleFocus}
+		canConnect={canConnect} onConnect={connect} />
 	return (
 		<div className="cc-app cc-workspace" data-sources={panels.left} data-tools={panels.right !== null} data-expanded={expanded}>
 			<header className="cc-topbar cc-projectbar">
@@ -130,15 +135,17 @@ export default function ProjectCanvas({ project, onBack, storage, assets }: {
 					<button type="button" className="cc-btn cc-btn--ghost cc-projectbar__back" aria-label="Projects" onClick={async () => { if (await canvas.flush()) onBack() }}>
 						<ArrowLeft size={17} /><span>Projects</span>
 					</button>
-					<strong className="cc-workspace-title" title={project.name}>{project.name}</strong>
+					<div className="cc-projectbar__copy">
+						<strong className="cc-workspace-title" title={project.name}>{project.name}</strong>
+						{compact && saveStatus}
+					</div>
 				</div>
-				<CanvasToolbar view={view} onView={changeView} leftPanel={panels.left ? leftTab : null} toolsOpen={panels.right === 'add'} assistantOpen={panels.right === 'assistant'}
-					onLayers={toggleLayers} onTools={() => toggleRight('add')} onAssistant={() => toggleRight('assistant')} onFocus={toggleFocus}
-					canConnect={canConnect} onConnect={connect} />
+				{!compact && toolbar}
 				<div className="cc-projectbar__utilities">
-					<span role="status" aria-label="Save status" className="cc-workspace-save">{canvas.saveStatus}</span>
-					<CanvasAppearance view={view} onView={changeView} />
-					<button type="button" className="cc-board-icon" id="canvas-guide-trigger" aria-label="Canvas guide" title="Canvas guide" onClick={guide.show}><CircleHelp size={18} /></button>
+					{compact
+						? <CanvasOptions view={view} onView={changeView} canConnect={canConnect} onConnect={connect} onGuide={guide.show} />
+						: <>{saveStatus}<CanvasAppearance view={view} onView={changeView} />
+							<button type="button" className="cc-board-icon" id="canvas-guide-trigger" aria-label="Canvas guide" title="Canvas guide" onClick={guide.show}><CircleHelp size={18} /></button></>}
 				</div>
 			</header>
 			<aside className="cc-sources cc-sidebar" id="project-layers" aria-label={leftTab === 'layers' ? 'Layers' : 'Sources'} hidden={!panels.left}>
@@ -184,6 +191,7 @@ export default function ProjectCanvas({ project, onBack, storage, assets }: {
 			<ProjectTools hidden={!panels.right} assistant={panels.right === 'assistant'} brief={project.brief} canvas={canvas} onAdd={() => toggleRight('add')}
 				controls={<PanelSizeControls expanded={expanded} onResize={() => setExpanded(!expanded)}
 					onClose={() => { if (panels.right) toggleRight(panels.right) }} name={panels.right === 'assistant' ? 'Assistant' : 'project tools'} />} />
+			{compact && toolbar}
 			{guide.open && <CanvasGuide onClose={guide.close} />}
 		</div>
 	)

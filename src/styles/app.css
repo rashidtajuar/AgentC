@@ -617,3 +617,44 @@ body {
 .cc-pop__count { margin-left: auto; font-size: var(--cc-text-xs); color: var(--cc-ink-faint); font-variant-numeric: tabular-nums; }
 
 .cc-route-loading { display: grid; min-height: 100dvh; place-items: center; color: var(--cc-shell-muted); }
+
+.cc-view-switch button, .cc-board-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	height: 30px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	background: transparent;
+	color: var(--cc-shell-muted);
+	font: inherit;
+	white-space: nowrap;
+	cursor: pointer;
+}
+
+.cc-board-icon { width: 32px; padding: 0; }
+.cc-board-icon:disabled { opacity: .45; cursor: default; }
+.cc-board-icon:not(:disabled):hover {
+	background: var(--cc-graphite-800);
+	color: var(--cc-shell-text);
+}
+.cc-board-icon[data-open='true'], .cc-board-icon[aria-expanded='true'] {
+	background: var(--cc-graphite-800);
+	color: var(--cc-shell-text);
+	border-color: var(--cc-shell-line);
+}
+
+/* Compact project commands sit below the editor and its drawing tools. */
+.cc-mobile-dock {
+	grid-area: dock;
+	position: relative;
+	z-index: 401;
+	display: grid;
+	align-items: stretch;
+	gap: 4px;
+	padding: 4px max(8px, env(safe-area-inset-right)) max(4px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+	border-top: 1px solid var(--cc-shell-line);
+	background: var(--cc-graphite-950);
+}
+.cc-mobile-dock .cc-board-icon { width: 100%; }
