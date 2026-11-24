@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useState, type FormEvent } from 'react'
 import type { Session, SupabaseClient } from '@supabase/supabase-js'
+import { LoadingRows, WorkspaceLoading } from '../workspace/WorkspaceLoading'
 import { ProjectHome } from '../workspace/ProjectHome'
 import { message } from '../workspace/message'
 import { createProject, readDocument, readProjects, type Project } from '../workspace/model'
@@ -17,7 +18,7 @@ export default function CloudWorkspace() {
 	}, [client])
 
 	if (!client) return <CloudEntry><p>Cloud projects are unavailable on this deployment.</p></CloudEntry>
-	if (session === undefined) return <CloudEntry><p role="status">Checking your session…</p></CloudEntry>
+	if (session === undefined) return <CloudEntry><LoadingRows label="Checking your session…" /></CloudEntry>
 	if (!session) return <SignIn client={client} />
 	return <CloudProjects key={session.user.id} client={client} userId={session.user.id} />
 }
@@ -133,20 +134,19 @@ function CloudProjects({ client, userId }: { client: SupabaseClient; userId: str
 			<p role="alert" className="cc-workspace-error">{openError}</p>
 			<button className="cc-btn cc-btn--shell" onClick={() => open(null)}>Back to cloud projects</button>
 		</CloudEntry>
-		if (!opened) return <CloudEntry><p role="status">Loading project…</p></CloudEntry>
-		return <Suspense fallback={<main className="cc-route-loading" role="status">Opening canvas…</main>}>
+		if (!opened) return <WorkspaceLoading canvas label="Loading project…" />
+		return <Suspense fallback={<WorkspaceLoading canvas label="Opening canvas…" />}>
 			<ProjectCanvas key={opened.project.id} {...opened} onBack={() => open(null)} />
 		</Suspense>
 	}
 
-	return <ProjectHome projects={projects} error={error} onOpen={(project) => open(project.id)}
+	return <ProjectHome projects={projects} loading={loading} error={error} onOpen={(project) => open(project.id)}
 		onCreate={async (name, brief) => saveProject(createProject(name, brief), null)}
 		footer="Cloud projects are private to your account."
 		actions={<>
 			<a className="cc-btn cc-btn--shell" href={location.pathname}>Browser projects</a>
 			<button className="cc-btn cc-btn--shell" onClick={signOut}>Sign out</button>
 		</>}>
-		{loading && <p role="status">Loading projects…</p>}
 		{error && <button className="cc-btn cc-btn--shell" onClick={() => { setError(''); setLoading(true); setRefresh(refresh + 1) }}>
 			Retry loading projects
 		</button>}

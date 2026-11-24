@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { ArrowUpRight, ImagePlus, Plus } from 'lucide-react'
+import { ArrowUpRight, BotMessageSquare, ImagePlus, ListTree, Plus } from 'lucide-react'
 import type { ArtifactShape } from '../canvas/shapes/types'
 import type { ToolKind } from '../core/types'
 import { SourceIcon } from '../ui/SourceIcon'
@@ -7,37 +7,30 @@ import { message } from './message'
 import { SOURCE_TYPES, sourceShape, sourceUrl } from './model'
 import type { useProjectCanvas } from './useProjectCanvas'
 
-export function SourcesPanel({ hidden, sources, onFocus }: {
-	hidden: boolean
+export function SourceList({ sources, onFocus }: {
 	sources: ArtifactShape[]
-	onFocus: (id: string) => void
+	onFocus: (id: ArtifactShape['id']) => void
 }) {
 	return (
-		<aside className="cc-sources" id="project-sources" aria-label="Sources" hidden={hidden}>
-			<div className="cc-panel-head">
-				<h2 className="cc-panel-title">Sources</h2>
-				<span className="cc-panel-count">{sources.length}</span>
-			</div>
-			<div className="cc-sources__scroll">
-				{sources.length ? (
-					<ul className="cc-workspace-sources">
-						{sources.map(({ id, props }) => {
-							const href = safeSourceHref(props.location)
-							return (
-								<li key={id}>
-									<button type="button" onClick={() => onFocus(id)} title={props.name}>
-										<SourceIcon tool={props.tool} location={props.location} />
-										<span>{props.name}</span>
-									</button>
-									{href ? <a href={href} target="_blank" rel="noopener noreferrer" aria-label={`Open ${props.name}`}><ArrowUpRight size={15} /></a> : null}
-									<small>{SOURCE_TYPES[props.tool as ToolKind] ?? 'Source'} · {href ? 'Link only' : 'Invalid link'}</small>
-								</li>
-							)
-						})}
-					</ul>
-				) : <p className="cc-workspace-hint">Pin a source to find it here.</p>}
-			</div>
-		</aside>
+		<div className="cc-sources__scroll">
+			{sources.length ? (
+				<ul className="cc-workspace-sources">
+					{sources.map(({ id, props }) => {
+						const href = safeSourceHref(props.location)
+						return (
+							<li key={id}>
+								<button type="button" onClick={() => onFocus(id)} title={props.name}>
+									<SourceIcon tool={props.tool} location={props.location} />
+									<span>{props.name}</span>
+								</button>
+								{href ? <a href={href} target="_blank" rel="noopener noreferrer" aria-label={`Open ${props.name}`}><ArrowUpRight size={15} /></a> : null}
+								<small>{SOURCE_TYPES[props.tool as ToolKind] ?? 'Source'} · {href ? 'Link only' : 'Invalid link'}</small>
+							</li>
+						)
+					})}
+				</ul>
+			) : <p className="cc-workspace-hint">Pin a source to find it here.</p>}
+		</div>
 	)
 }
 
@@ -45,10 +38,12 @@ function safeSourceHref(location: string) {
 	try { return sourceUrl(location) } catch { return undefined }
 }
 
-export function ProjectTools({ hidden, brief, canvas, cloud }: {
+export function ProjectTools({ hidden, assistant, brief, canvas, controls, onAdd }: {
 	hidden: boolean
+	assistant: boolean
+	controls: React.ReactNode
+	onAdd: () => void
 	brief: string
-	cloud: boolean
 	canvas: ReturnType<typeof useProjectCanvas>
 }) {
 	const { runtime, sources, pending, blocked, error, notice, setError, finish, propose, reload } = canvas
@@ -73,6 +68,9 @@ export function ProjectTools({ hidden, brief, canvas, cloud }: {
 			runtime.port.apply([{ op: 'createShape', shape }, { op: 'setStatus', id: shape.id, dot: 'changed' }])
 			if (!runtime.port.exists(shape.id)) throw new Error('This canvas is full. Remove an item before adding another.')
 			runtime.port.focus([shape.id])
+			if (matchMedia('(pointer: coarse)').matches && document.activeElement instanceof HTMLInputElement) {
+				document.activeElement.blur()
+			}
 			setName('')
 			setUrl('')
 			setError('')
@@ -80,8 +78,10 @@ export function ProjectTools({ hidden, brief, canvas, cloud }: {
 	}
 
 	return (
-		<aside className="cc-ai" id="project-tools" aria-label="Project tools" hidden={hidden}>
-			<div className="cc-panel-head"><h2 className="cc-panel-title">Project tools</h2></div>
+		<aside className="cc-ai" id="project-tools" aria-label={assistant ? 'Assistant' : 'Project tools'} hidden={hidden}>
+			<div className="cc-workspace-panel-head">
+				<h2>{assistant ? <><BotMessageSquare size={18} /> Assistant</> : 'Add to canvas'}</h2>{controls}
+			</div>
 			<div className="cc-workspace-panel">
 				{error ? (
 					<div className="cc-workspace-error" role="alert">
@@ -95,43 +95,49 @@ export function ProjectTools({ hidden, brief, canvas, cloud }: {
 						{blocked ? <button type="button" className="cc-btn cc-btn--shell" onClick={reload}>Reload saved version</button> : null}
 					</div>
 				) : null}
-				{brief ? <section><h3>The brief</h3><p className="cc-workspace-brief">{brief}</p></section> : null}
-				<section>
-					<h3>Pin a source</h3>
-					<form onSubmit={addSource}>
-						<fieldset disabled={!runtime || !!pending || blocked}>
-							<label htmlFor="source-name">Source name</label>
-							<input id="source-name" maxLength={120} value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Website research" required />
-							<label htmlFor="source-url">Source URL</label>
-							<input id="source-url" type="url" maxLength={2048} value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…" required />
-							<label htmlFor="source-type">Source type</label>
-							<select id="source-type" value={tool} onChange={(e) => setTool(e.target.value as ToolKind)}>
-								{Object.entries(SOURCE_TYPES).map(([value, label]) => <option value={value} key={value}>{label}</option>)}
-							</select>
-							<button className="cc-btn cc-btn--shell"><Plus size={15} /> Add source</button>
-						</fieldset>
-					</form>
-				</section>
-				<section>
-					<h3>Images</h3>
-					<label className="cc-media-picker cc-btn cc-btn--shell">
-						<ImagePlus size={15} /> {addingImages ? 'Adding images…' : 'Add images'}
-						<input type="file" accept="image/png,image/jpeg,image/gif,image/webp,image/avif,image/bmp" multiple
-							disabled={!runtime || !!pending || blocked || addingImages} onChange={async (event) => {
-								const files = Array.from(event.currentTarget.files ?? [])
-								event.currentTarget.value = ''
-								if (!runtime || !files.length) return
-								setAddingImages(true)
-								setError('')
-								try { await runtime.editor.putExternalContent({ type: 'files', files }) }
-								catch (err) { setError(message(err)) }
-								finally { setAddingImages(false) }
-							}} />
-					</label>
-				</section>
-				<section className="cc-workspace-planner">
-					<h3>Organize sources</h3>
-					<p>Preview a layout grouped by source type.</p>
+				<div className="cc-panel-stack" hidden={assistant}>
+					{brief ? <section><h3>The brief</h3><p className="cc-workspace-brief">{brief}</p></section> : null}
+					<section>
+						<h3>Pin a source</h3>
+						<form onSubmit={addSource}>
+							<fieldset disabled={!runtime || !!pending || blocked}>
+								<label htmlFor="source-name">Source name</label>
+								<input id="source-name" maxLength={120} value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Website research" required />
+								<label htmlFor="source-url">Source URL</label>
+								<input id="source-url" type="url" maxLength={2048} value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…" required />
+								<label htmlFor="source-type">Source type</label>
+								<select id="source-type" value={tool} onChange={(e) => setTool(e.target.value as ToolKind)}>
+									{Object.entries(SOURCE_TYPES).map(([value, label]) => <option value={value} key={value}>{label}</option>)}
+								</select>
+								<button className="cc-btn cc-btn--shell"><Plus size={15} /> Add source</button>
+							</fieldset>
+						</form>
+					</section>
+					<section>
+						<h3>Images</h3>
+						<label className="cc-media-picker cc-btn cc-btn--shell">
+							<ImagePlus size={15} /> {addingImages ? 'Adding images…' : 'Add images'}
+							<input type="file" accept="image/png,image/jpeg,image/gif,image/webp,image/avif,image/bmp" multiple
+								disabled={!runtime || !!pending || blocked || addingImages} onChange={async (event) => {
+									const files = Array.from(event.currentTarget.files ?? [])
+									event.currentTarget.value = ''
+									if (!runtime || !files.length) return
+									setAddingImages(true)
+									setError('')
+									try { await runtime.editor.putExternalContent({ type: 'files', files }) }
+									catch (err) { setError(message(err)) }
+									finally { setAddingImages(false) }
+								}} />
+						</label>
+					</section>
+				</div>
+				<section className="cc-assistant" hidden={!assistant}>
+					<div className="cc-assistant__message">
+						<BotMessageSquare size={17} aria-hidden="true" />
+						<div><strong>AgentC</strong><p>{sources.length ? 'I can group your sources by type so related references are easier to find.' : 'Pin a source to the canvas and I can suggest how to arrange your references.'}</p></div>
+					</div>
+					<p className="cc-workspace-hint">Layout suggestions use a local rule.</p>
+					{!sources.length && <button type="button" className="cc-btn cc-btn--shell" onClick={onAdd}><Plus size={16} /> Add a source</button>}
 					{pending ? (
 						<section className="cc-proposal" aria-label="Proposal review">
 							<strong>{pending.summary}</strong>
@@ -141,10 +147,9 @@ export function ProjectTools({ hidden, brief, canvas, cloud }: {
 								<button type="button" className="cc-btn cc-btn--ghost" disabled={blocked} onClick={() => finish(false)}>Discard</button>
 							</div>
 						</section>
-					) : <button type="button" className="cc-btn cc-btn--shell" disabled={!runtime || !sources.length || blocked} onClick={propose}>Propose organization</button>}
+					) : sources.length > 0 && <button type="button" className="cc-btn cc-btn--shell" disabled={!runtime || blocked} onClick={propose}><ListTree size={16} /> Propose organization</button>}
 					{notice ? <p className="cc-workspace-hint" aria-live="polite">{notice}</p> : null}
 				</section>
-				<p className="cc-workspace-hint">{cloud ? 'Saved to your account.' : 'Saved in this browser.'} Layout suggestions use a local rule.</p>
 			</div>
 		</aside>
 	)

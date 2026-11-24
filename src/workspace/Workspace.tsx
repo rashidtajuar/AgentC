@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { createProject, PROJECTS_KEY, readProjects, writeProjects, type Project } from './model'
+import { WorkspaceLoading } from './WorkspaceLoading'
 import { ProjectHome } from './ProjectHome'
 import { message } from './message'
 import './workspace.css'
@@ -39,7 +40,7 @@ export function Workspace() {
 	}
 
 	if (active) return (
-		<Suspense fallback={<main className="cc-route-loading" role="status">Opening canvas…</main>}>
+		<Suspense fallback={<WorkspaceLoading canvas label="Opening canvas…" />}>
 			<ProjectCanvas key={active.id} project={active} onBack={() => open(null)} />
 		</Suspense>
 	)

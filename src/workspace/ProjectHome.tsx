@@ -1,15 +1,17 @@
 import { useState, type ReactNode } from 'react'
 import { ArrowUpRight, LayoutGrid, Plus } from 'lucide-react'
 import type { Project } from './model'
+import { LoadingRows } from './WorkspaceLoading'
 import { message } from './message'
 
-export function ProjectHome({ projects, error, onOpen, onCreate, actions, footer, children }: {
+export function ProjectHome({ projects, error, onOpen, onCreate, actions, footer, children, loading }: {
 	projects: Project[]
 	error: string
 	onOpen: (p: Project) => void
 	onCreate: (name: string, brief: string) => void | Promise<void>
 	actions?: ReactNode
 	footer?: string
+	loading?: boolean
 	children?: ReactNode
 }) {
 	const [name, setName] = useState('')
@@ -35,8 +37,8 @@ export function ProjectHome({ projects, error, onOpen, onCreate, actions, footer
 					{formError ? <p role="alert" className="cc-workspace-error">{formError}</p> : null}
 					<button className="cc-btn cc-btn--primary" disabled={creating || !!error}><Plus size={16} /> {creating ? 'Creating…' : 'Create project'}</button>
 				</form></section>
-				<section className="cc-projects__list" aria-labelledby="your-projects"><h2 id="your-projects">Your projects <span>{projects.length}</span></h2>
-					{projects.length ? <ul>{projects.map((p) => <li key={p.id}><button onClick={() => onOpen(p)} aria-label={`Open ${p.name}`}><LayoutGrid size={20} /><span><strong>{p.name}</strong><small>{p.brief || 'An open canvas, ready for your ideas.'}</small></span><ArrowUpRight size={16} /></button></li>)}</ul> : <div className="cc-projects__empty"><LayoutGrid size={28} /><p>A fresh wall for your next idea.</p><span>Your projects will appear here.</span></div>}
+				<section className="cc-projects__list" aria-labelledby="your-projects"><h2 id="your-projects">Your projects {!loading && <span>{projects.length}</span>}</h2>
+					{loading ? <LoadingRows label="Loading projects…" /> : projects.length ? <ul>{projects.map((p) => <li key={p.id}><button onClick={() => onOpen(p)} aria-label={`Open ${p.name}`}><LayoutGrid size={20} /><span><strong>{p.name}</strong><small>{p.brief || 'An open canvas, ready for your ideas.'}</small></span><ArrowUpRight size={16} /></button></li>)}</ul> : <div className="cc-projects__empty"><LayoutGrid size={28} /><p>A fresh wall for your next idea.</p><span>Your projects will appear here.</span></div>}
 				</section>
 			</div>
 			{children}

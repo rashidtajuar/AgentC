@@ -341,6 +341,10 @@ Quiet and solid; one light primary per group on graphite.
 - **Moodboard:** White prints with paper shadows. Fully attached arrows and authored relationships are hidden while retaining their geometry and bindings.
 - **Node map:** The same canvas shows saved connections. Artifact prints use a thin ink outline and small neutral connection markers. Image and note shapes get a thin outline. Select two items and connect them from the top bar, or use the canvas arrow tool.
 - **Appearance:** A quiet dotted surface is the workspace default. Five light backgrounds preserve contrast for existing canvas ink. Grid visibility, background, and view are local per project.
+- **Compact canvas:** Keep the canvas open edge to edge by default. Layers, Add, and Assist sit together with 44px touch targets. Secondary panels dock below the canvas at two heights. Full-width canvas controls remain reachable when a panel closes.
+- **Layers:** A searchable list follows front-to-back canvas order and indents frame and group children. Use the type or provider icon, the layer label, and a separate lock action. Selecting a hidden relationship opens Node map and locates it.
+- **Assistant and guidance:** Use the monochrome Lucide bot mark for assistant entry points and messages. Keep proposal review explicit. Offer a dismissible first-board tip and an optional guide from the toolbar.
+- **Loading:** Use static graphite placeholders for project lists and a quiet, light board surface during editor startup.
 
 ### Inputs / Fields
 - **Composer:** Graphite-850, 14px radius, shell-line border that brightens to 24% on focus-within; borderless textarea, cobalt caret, faint placeholder; a 30px send square at 9px radius in shell-text, graphite-700 when empty.

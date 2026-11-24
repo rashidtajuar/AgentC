@@ -1,15 +1,21 @@
-import { useCallback, useRef, useState, type CSSProperties } from 'react'
-import { ArrowLeft, Network } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
+import { ArrowLeft, CircleHelp, Network, X } from 'lucide-react'
 import { atom, useValue, type Editor, type TLShape, type TLAssetStore, type TldrawProps } from 'tldraw'
 import { Canvas } from '../canvas/Canvas'
-import { CanvasToolbar } from './CanvasToolbar'
+import { CanvasAppearance, CanvasToolbar } from './CanvasToolbar'
 import { BOARD_COLORS, hasConnection, isConnection, readView, viewKey, type BoardView } from './boardView'
-import { ProjectTools, SourcesPanel } from './ProjectPanels'
+import { PanelSizeControls } from './PanelSizeControls'
+import { ProjectTools, SourceList } from './ProjectPanels'
+import { LayersPanel } from './LayersPanel'
+import { CanvasGuide, useCanvasGuide } from './CanvasGuide'
+import { LoadingRows } from './WorkspaceLoading'
 import { useProjectCanvas, type CanvasStorage } from './useProjectCanvas'
 import type { Project } from './model'
 import './projectCanvas.css'
 
-const narrow = () => matchMedia('(max-width: 900px)').matches
+const compactQuery = '(max-width: 900px), (hover: none) and (pointer: coarse)'
+type Panels = { left: boolean; right: 'add' | 'assistant' | null }
+const closed: Panels = { left: false, right: null }
 
 export default function ProjectCanvas({ project, onBack, storage, assets }: {
 	project: Project
@@ -21,9 +27,28 @@ export default function ProjectCanvas({ project, onBack, storage, assets }: {
 	const { runtime, blocked, pending } = canvas
 	const [view, setView] = useState(() => readView(project.id))
 	const [mode] = useState(() => atom('project canvas view', view.mode))
-	const [panels, setPanels] = useState(() => ({ sources: !narrow(), tools: true }))
-	const lastPanels = useRef(panels)
+	const [compact, setCompact] = useState(() => matchMedia(compactQuery).matches)
+	const [panels, setPanels] = useState<Panels>(() => compact ? closed : { left: true, right: 'add' })
+	const [leftTab, setLeftTab] = useState<'layers' | 'sources'>('sources')
+	const [expanded, setExpanded] = useState(false)
+	const lastPanels = useRef<Panels>({ left: true, right: 'add' })
+	const guide = useCanvasGuide()
+	useEffect(() => {
+		const media = matchMedia(compactQuery)
+		const change = () => {
+			setCompact(media.matches)
+			setExpanded(false)
+			if (media.matches) setPanels(closed)
+		}
+		media.addEventListener('change', change)
+		return () => media.removeEventListener('change', change)
+	}, [])
 	const [connectionNotice, setConnectionNotice] = useState('')
+	useEffect(() => {
+		if (!connectionNotice) return
+		const timer = setTimeout(() => setConnectionNotice(''), 3500)
+		return () => clearTimeout(timer)
+	}, [connectionNotice])
 	const editor = runtime?.editor
 	const selected = useValue('connectable selection', () => editor?.getSelectedShapes() ?? [], [editor])
 	const count = useValue('canvas shape count', () => editor?.getCurrentPageShapeIds().size ?? 0, [editor])
@@ -44,21 +69,45 @@ export default function ProjectCanvas({ project, onBack, storage, assets }: {
 		catch { setConnectionNotice('Appearance could not be saved for next time.') }
 	}
 
-	function togglePanel(panel: keyof typeof panels) {
-		setPanels((current) => {
-			const open = !current[panel]
-			if (open && narrow()) return { sources: panel === 'sources', tools: panel === 'tools' }
-			return { ...current, [panel]: open }
-		})
+	function toggleLayers() {
+		if (panels.left && leftTab === 'sources') {
+			setLeftTab('layers')
+			return
+		}
+		setLeftTab('layers')
+		setExpanded(false)
+		setPanels((current) => ({ left: !current.left, right: compact && !current.left ? null : current.right }))
+	}
+
+	function toggleRight(panel: 'add' | 'assistant') {
+		setExpanded(false)
+		setPanels((current) => ({
+			left: compact ? false : current.left,
+			right: current.right === panel ? null : panel,
+		}))
 	}
 
 	function toggleFocus() {
-		if (panels.sources || panels.tools) {
+		if (panels.left || panels.right) {
 			lastPanels.current = panels
-			setPanels({ sources: false, tools: false })
+			setPanels(closed)
 		} else {
-			setPanels(narrow() && lastPanels.current.tools ? { sources: false, tools: true } : lastPanels.current)
+			setPanels(lastPanels.current)
 		}
+	}
+
+	function locate(id: TLShape['id'], connection = false) {
+		if (!editor) return
+		if (connection && view.mode !== 'map') changeView({ ...view, mode: 'map' })
+		if (compact) setPanels(closed)
+		const select = () => {
+			const bounds = editor.getShapePageBounds(id)
+			if (!bounds) return
+			editor.select(id)
+			editor.zoomToBounds(bounds, { targetZoom: 1 })
+		}
+		if (compact) requestAnimationFrame(select)
+		else select()
 	}
 
 	function connect() {
@@ -75,20 +124,36 @@ export default function ProjectCanvas({ project, onBack, storage, assets }: {
 
 	const boardStyle = { '--cc-board-surface': BOARD_COLORS[view.color].value } as CSSProperties
 	return (
-		<div className="cc-app cc-workspace" data-sources={panels.sources} data-tools={panels.tools}>
+		<div className="cc-app cc-workspace" data-sources={panels.left} data-tools={panels.right !== null} data-expanded={expanded}>
 			<header className="cc-topbar cc-projectbar">
 				<div className="cc-projectbar__identity">
-					<button type="button" className="cc-btn cc-btn--ghost" onClick={async () => { if (await canvas.flush()) onBack() }}>
-						<ArrowLeft size={15} /> Projects
+					<button type="button" className="cc-btn cc-btn--ghost cc-projectbar__back" aria-label="Projects" onClick={async () => { if (await canvas.flush()) onBack() }}>
+						<ArrowLeft size={17} /><span>Projects</span>
 					</button>
 					<strong className="cc-workspace-title" title={project.name}>{project.name}</strong>
 				</div>
-				<CanvasToolbar view={view} onView={changeView} sourcesOpen={panels.sources} toolsOpen={panels.tools}
-					onSources={() => togglePanel('sources')} onTools={() => togglePanel('tools')} onFocus={toggleFocus}
+				<CanvasToolbar view={view} onView={changeView} leftPanel={panels.left ? leftTab : null} toolsOpen={panels.right === 'add'} assistantOpen={panels.right === 'assistant'}
+					onLayers={toggleLayers} onTools={() => toggleRight('add')} onAssistant={() => toggleRight('assistant')} onFocus={toggleFocus}
 					canConnect={canConnect} onConnect={connect} />
-				<span role="status" aria-label="Save status" className="cc-workspace-save">{canvas.saveStatus}</span>
+				<div className="cc-projectbar__utilities">
+					<span role="status" aria-label="Save status" className="cc-workspace-save">{canvas.saveStatus}</span>
+					<CanvasAppearance view={view} onView={changeView} />
+					<button type="button" className="cc-board-icon" id="canvas-guide-trigger" aria-label="Canvas guide" title="Canvas guide" onClick={guide.show}><CircleHelp size={18} /></button>
+				</div>
 			</header>
-			<SourcesPanel hidden={!panels.sources} sources={canvas.sources} onFocus={(id) => runtime?.port.focus([id])} />
+			<aside className="cc-sources cc-sidebar" id="project-layers" aria-label={leftTab === 'layers' ? 'Layers' : 'Sources'} hidden={!panels.left}>
+				<div className="cc-workspace-panel-head">
+					<div className="cc-panel-views" role="group" aria-label="Browse canvas">
+						<button type="button" className="cc-btn" aria-pressed={leftTab === 'layers'} onClick={() => setLeftTab('layers')}>Layers</button>
+						<button type="button" className="cc-btn" aria-pressed={leftTab === 'sources'} onClick={() => setLeftTab('sources')}>Sources</button>
+					</div>
+					<PanelSizeControls expanded={expanded} onResize={() => setExpanded(!expanded)} onClose={() => { setPanels({ ...panels, left: false }); setExpanded(false) }} name="layers and sources" />
+				</div>
+				{panels.left && (leftTab === 'layers'
+					? editor ? <LayersPanel editor={editor} canEdit={!blocked && !pending} onLocate={locate} />
+						: !blocked && <LoadingRows label="Loading layers" />
+					: <SourceList sources={canvas.sources} onFocus={locate} />)}
+			</aside>
 			<main className="cc-canvas cc-project-canvas" aria-label="Canvas" data-view={view.mode}
 				data-dotted={view.dotted} style={boardStyle}>
 				<Canvas onMount={canvas.onMount} getShapeVisibility={getShapeVisibility} assets={assets} />
@@ -96,6 +161,10 @@ export default function ProjectCanvas({ project, onBack, storage, assets }: {
 					<div className="cc-workspace-empty">
 						<h2>Room to think.</h2>
 						<p>Pin a source, add an image, or draw on the canvas.</p>
+						{guide.hint && <div className="cc-workspace-empty__help">
+							<button type="button" className="cc-board-tip" onClick={guide.show}><CircleHelp size={16} /> Take a quick tour</button>
+							<button type="button" className="cc-board-tip" aria-label="Dismiss tour suggestion" onClick={guide.dismissHint}><X size={16} /></button>
+						</div>}
 					</div>
 				) : null}
 				{view.mode === 'map' && count > 0 && !pending ? (
@@ -105,14 +174,17 @@ export default function ProjectCanvas({ project, onBack, storage, assets }: {
 						<span className="cc-map-hint__touch">Use the Arrow tool to connect items.</span>
 					</p>
 				) : null}
-				{!panels.tools && (pending || (canvas.error && blocked)) ? (
-					<button type="button" className="cc-btn cc-btn--shell cc-canvas-recovery" onClick={() => togglePanel('tools')}>
+				{(pending ? panels.right !== 'assistant' : !panels.right && canvas.error && blocked) ? (
+					<button type="button" className="cc-btn cc-btn--shell cc-canvas-recovery" onClick={() => toggleRight(pending ? 'assistant' : 'add')}>
 						{pending ? 'Review pending layout' : 'See save details'}
 					</button>
 				) : null}
-				<span className="cc-sr" aria-live="polite">{connectionNotice}</span>
+				<div className="cc-board-notice" role="status">{connectionNotice}</div>
 			</main>
-			<ProjectTools hidden={!panels.tools} brief={project.brief} canvas={canvas} cloud={!!storage} />
+			<ProjectTools hidden={!panels.right} assistant={panels.right === 'assistant'} brief={project.brief} canvas={canvas} onAdd={() => toggleRight('add')}
+				controls={<PanelSizeControls expanded={expanded} onResize={() => setExpanded(!expanded)}
+					onClose={() => { if (panels.right) toggleRight(panels.right) }} name={panels.right === 'assistant' ? 'Assistant' : 'project tools'} />} />
+			{guide.open && <CanvasGuide onClose={guide.close} />}
 		</div>
 	)
 }

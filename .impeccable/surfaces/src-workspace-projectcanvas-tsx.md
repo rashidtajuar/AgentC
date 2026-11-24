@@ -7,7 +7,7 @@ related_targets: [src/workspace/CanvasToolbar.tsx, src/workspace/ProjectPanels.t
 
 ## Scope
 
-Saved canvas workspace for designers and studio teams. Mode: Operate. The workspace opens from the local project list; the scripted sample is a separate route.
+Saved canvas workspace for designers and studio teams. Mode: Operate. The workspace opens from the local or cloud project list; the scripted sample is a separate route.
 
 ## Direction
 
@@ -15,4 +15,4 @@ The Crit Wall remains a light canvas inside a graphite shell. Moodboard shows re
 
 ## Interaction
 
-The top bar holds the two views, a connection control in Node map, background and grid options, panel toggles, and focus mode. Link and file cards use recognizable source marks or a generic type icon beside text. When space is narrow, Sources and Project tools can be opened in the lower dock. Background and view choices persist separately from the board so changing the view cannot rewrite canvas records.
+The top bar holds the two views, a connection control in Node map, background and grid options, panel toggles, and focus mode. Link and file cards use recognizable source marks or a generic type icon beside text. On compact screens, the board opens with panels closed. Layers and Sources share a searchable left rail on desktop and an expandable lower dock on touch layouts. Add and Assistant occupy the other rail on desktop and use the same lower dock on compact screens. The optional canvas guide is opened from the Help control. Background and view choices persist separately from the board so changing the view cannot rewrite canvas records.

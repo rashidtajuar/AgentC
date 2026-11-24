@@ -20,16 +20,17 @@ function labelOf(s: BoardShape) {
 	return { name: String(s.props.title ?? 'Image'), ext: KIND_TAG[kind] ?? 'photo', isKind: true }
 }
 
-export function SourcesRail() {
+export function SourcesRail({ controls }: { controls?: React.ReactNode }) {
 	const ctx = useDemoCtx()
 	const board = useBoard()
 	const shapes = board?.shapes ?? []
 
 	return (
-		<aside className="cc-sources" aria-label="Sources">
+		<aside className="cc-sources" id="sample-sources" aria-label="Sources">
 			<div className="cc-panel-head">
 				<h2 className="cc-panel-title">Sources</h2>
 				<span className="cc-panel-count">{shapes.filter((s) => s.type !== 'note' && s.type !== 'direction' && s.type !== 'decision').length}</span>
+				{controls}
 			</div>
 			<div className="cc-sources__scroll">
 				{GROUPS.map((g) => {

@@ -13,6 +13,10 @@ final class CanvasSmokeTests: XCTestCase {
         projectName.tap()
         projectName.typeText(title + "\n")
 
+        let add = web.buttons["Show Project tools"]
+        XCTAssertTrue(add.waitForExistence(timeout: 20))
+        add.tap()
+
         let sourceName = web.textFields["Source name"]
         XCTAssertTrue(sourceName.waitForExistence(timeout: 20), "Create project should open the canvas")
         sourceName.tap()
@@ -24,10 +28,10 @@ final class CanvasSmokeTests: XCTestCase {
         let nodeMap = web.descendants(matching: .any)["Node map"].firstMatch
         XCTAssertTrue(nodeMap.waitForExistence(timeout: 10))
         nodeMap.tap()
-        let showSources = web.buttons["Show Sources"]
-        if showSources.exists { showSources.tap() }
-        let source = web.links["Open Editorial reference"]
-        XCTAssertTrue(source.waitForExistence(timeout: 10), "The newly pinned source should be visible")
+        let showLayers = web.buttons["Show Layers"]
+        let sourceLayer = web.descendants(matching: .any)["Locate Editorial reference"].firstMatch
+        showLayers.tap()
+        XCTAssertTrue(sourceLayer.waitForExistence(timeout: 15), "The pinned source should appear in Layers")
         XCTAssertTrue(web.staticTexts["Saved on this browser"].waitForExistence(timeout: 10))
 
         app.terminate()
@@ -35,7 +39,8 @@ final class CanvasSmokeTests: XCTestCase {
         let openProject = web.buttons["Open \(title)"]
         XCTAssertTrue(openProject.waitForExistence(timeout: 15), "The project should survive app relaunch")
         openProject.tap()
-        if showSources.waitForExistence(timeout: 2) { showSources.tap() }
-        XCTAssertTrue(source.waitForExistence(timeout: 15), "The source should survive app relaunch")
+        XCTAssertTrue(showLayers.waitForExistence(timeout: 15))
+        showLayers.tap()
+        XCTAssertTrue(sourceLayer.waitForExistence(timeout: 15), "The source should survive app relaunch")
     }
 }

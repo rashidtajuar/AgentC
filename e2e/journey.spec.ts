@@ -80,3 +80,25 @@ test('approving another direction politely declines', async ({ page }) => {
 	await expect(ai(page)).toContainText('in the real product any direction can be approved', { timeout: 8_000 })
 	await expect(page.getByLabel(/^Decision:/)).toHaveCount(0)
 })
+
+test('the sample opens canvas-first and keeps chat available on mobile', async ({ page }) => {
+	await page.setViewportSize({ width: 320, height: 740 })
+	await page.goto('/?demo=1')
+	const canvas = page.getByRole('main', { name: 'Canvas' })
+	await expect(canvas).toBeVisible()
+	await expect(page.getByRole('complementary')).toHaveCount(0)
+	const initial = (await canvas.boundingBox())!.height
+	await page.getByRole('button', { name: 'Assistant', exact: true }).click()
+	await expect(page.getByRole('complementary', { name: 'AI' })).toBeVisible()
+	const compact = (await canvas.boundingBox())!.height
+	await page.getByRole('button', { name: 'Expand Assistant' }).click()
+	expect((await canvas.boundingBox())!.height).toBeLessThan(compact)
+	await page.getByRole('button', { name: 'Minimize Assistant' }).click()
+	expect((await canvas.boundingBox())!.height).toBe(compact)
+	await page.getByRole('button', { name: 'Sources', exact: true }).click()
+	await expect(page.getByRole('complementary', { name: 'Sources' })).toBeVisible()
+	await expect(page.getByRole('complementary', { name: 'AI' })).toHaveCount(0)
+	await page.getByRole('button', { name: 'Close Sources' }).click()
+	expect((await canvas.boundingBox())!.height).toBe(initial)
+	expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320)
+})

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { BotMessageSquare, Layers } from 'lucide-react'
 import type { Editor } from 'tldraw'
 import { Canvas } from './canvas/Canvas'
 import { CC_EVENTS } from './canvas/canvasUi'
@@ -15,8 +16,12 @@ import { PresenceLayer } from './ui/PresenceLayer'
 import { SourcesRail } from './ui/SourcesRail'
 import { Toasts } from './ui/Toasts'
 import { TopBar } from './ui/TopBar'
+import { PanelSizeControls } from './workspace/PanelSizeControls'
+import './styles/demoMobile.css'
 
 export default function DemoApp() {
+	const [dock, setDock] = useState<'sources' | 'assistant' | null>(null)
+	const [expanded, setExpanded] = useState(false)
 	const [demo, setDemo] = useState<{ store: DemoStore; port: CanvasPort } | null>(null)
 
 	const onMount = useCallback((editor: Editor) => {
@@ -52,11 +57,19 @@ export default function DemoApp() {
 		}
 	}, [demo])
 
+	function toggle(panel: 'sources' | 'assistant') {
+		setExpanded(false)
+		setDock((current) => current === panel ? null : panel)
+	}
+
 	return (
 		<DemoProvider value={demo}>
-		<div className="cc-app">
-			<TopBar />
-			<SourcesRail />
+		<div className="cc-app cc-sample-app" data-dock={dock ?? 'closed'} data-expanded={expanded}>
+			<TopBar mobileActions={<>
+				<button type="button" className="cc-btn cc-btn--shell" aria-expanded={dock === 'sources'} aria-controls="sample-sources" onClick={() => toggle('sources')}><Layers size={17} /> Sources</button>
+				<button type="button" className="cc-btn cc-btn--shell" aria-expanded={dock === 'assistant'} aria-controls="sample-assistant" onClick={() => toggle('assistant')}><BotMessageSquare size={17} /> Assistant</button>
+			</>} />
+			<SourcesRail controls={<PanelSizeControls expanded={expanded} onResize={() => setExpanded(!expanded)} onClose={() => toggle('sources')} name="Sources" />} />
 			<main className="cc-canvas" aria-label="Canvas">
 				<Canvas onMount={onMount} />
 				<PresenceLayer />
@@ -64,7 +77,7 @@ export default function DemoApp() {
 				<ProposalSheet />
 				<Toasts />
 			</main>
-			<AiPanel />
+			<AiPanel controls={<PanelSizeControls expanded={expanded} onResize={() => setExpanded(!expanded)} onClose={() => toggle('assistant')} name="Assistant" />} />
 		</div>
 		</DemoProvider>
 	)
